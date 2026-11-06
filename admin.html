@@ -1,1 +1,650 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACB MOTORS - Admin Panel</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  color: #222;
+}
+
+header {
+  background: #c90000;
+  color: white;
+  text-align: center;
+  padding: 25px 10px;
+}
+
+header h1 {
+  font-size: 30px;
+}
+
+.container {
+  max-width: 650px;
+  margin: 25px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px #ddd;
+}
+
+h2 {
+  color: #c90000;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 13px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 15px;
+}
+
+.main-btn {
+  width: 100%;
+  background: #c90000;
+  color: white;
+  margin-top: 10px;
+}
+
+.logout-btn {
+  background: #333;
+  color: white;
+  margin-bottom: 15px;
+}
+
+.vehicle-item {
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 7px;
+}
+
+.vehicle-item img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background: #eee;
+}
+
+.vehicle-item h3 {
+  color: #c90000;
+  margin: 10px 0;
+}
+
+.edit-btn {
+  background: #1675c1;
+  color: white;
+  margin: 5px;
+}
+
+.delete-btn {
+  background: #c90000;
+  color: white;
+  margin: 5px;
+}
+
+#message {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+footer {
+  text-align: center;
+  background: #c90000;
+  color: white;
+  padding: 20px;
+  margin-top: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>ACB MOTORS</h1>
+  <p>ADMIN DASHBOARD</p>
+</header>
+
+<!-- LOGIN -->
+
+<div class="container" id="loginBox">
+
+  <h2>Admin Login</h2>
+
+  <input
+    type="email"
+    id="email"
+    placeholder="Admin Email"
+  >
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Admin Password"
+  >
+
+  <button class="main-btn" onclick="adminLogin()">
+    LOGIN
+  </button>
+
+  <p id="loginMessage"></p>
+
+</div>
+
+<!-- ADMIN DASHBOARD -->
+
+<div class="container hidden" id="dashboard">
+
+  <button class="logout-btn" onclick="adminLogout()">
+    Logout
+  </button>
+
+  <h2>ADD / EDIT VEHICLE</h2>
+
+  <input type="hidden" id="editId">
+
+  <input
+    id="vehicleName"
+    placeholder="Vehicle Name"
+  >
+
+  <select id="category">
+    <option value="">Select Category</option>
+    <option value="Diesel">Car - Diesel</option>
+    <option value="Petrol">Car - Petrol</option>
+    <option value="EV">Car - EV</option>
+    <option value="Bike">Bike</option>
+    <option value="Scooty">Scooty</option>
+  </select>
+
+  <input
+    id="year"
+    type="number"
+    placeholder="Year"
+  >
+
+  <input
+    id="owner"
+    placeholder="Owner (Example: 1st Owner)"
+  >
+
+  <input
+    id="price"
+    type="number"
+    placeholder="Price"
+  >
+
+  <input
+    id="km"
+    type="number"
+    placeholder="Kilometers"
+  >
+
+  <input
+    id="fuel"
+    placeholder="Fuel Type"
+  >
+
+  <textarea
+    id="description"
+    placeholder="Vehicle Description"
+    rows="4"
+  ></textarea>
+
+  <label>Vehicle Photo</label>
+
+  <input
+    id="photo"
+    type="file"
+    accept="image/*"
+  >
+
+  <button class="main-btn" onclick="saveVehicle()">
+    SAVE VEHICLE
+  </button>
+
+  <button
+    class="main-btn"
+    style="background:#555"
+    onclick="clearForm()"
+  >
+    CLEAR FORM
+  </button>
+
+  <p id="message"></p>
+
+  <hr style="margin:25px 0;">
+
+  <h2>MANAGE VEHICLES</h2>
+
+  <div id="vehicleList"></div>
+
+</div>
+
+<footer>
+  ACB MOTORS | Admin Panel
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"https://tcaewtllgfohthboyivb.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_WvQQ7IHQr9kQf-S07LY65A_U66frylM";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let currentVehicles = [];
+
+// ADMIN LOGIN
+
+async function adminLogin() {
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  const message = document.getElementById("loginMessage");
+
+  if (!email || !password) {
+    message.textContent = "Enter email and password.";
+    return;
+  }
+
+  message.textContent = "Checking...";
+
+  try {
+
+    await db.auth.signOut();
+
+    const { data, error } =
+      await db.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+    if (error) throw error;
+
+    await verifyAdmin(data.user.id);
+
+  } catch (error) {
+
+    message.textContent = error.message;
+
+  }
+}
+
+// VERIFY ADMIN
+
+async function verifyAdmin(userId) {
+
+  const { data, error } =
+    await db
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+  if (error) throw error;
+
+  if (!data) {
+
+    await db.auth.signOut();
+
+    throw new Error("Admin access denied.");
+
+  }
+
+  document.getElementById("loginBox").classList.add("hidden");
+
+  document.getElementById("dashboard").classList.remove("hidden");
+
+  await loadVehicles();
+
+}
+
+// LOAD VEHICLES
+
+async function loadVehicles() {
+
+  const list = document.getElementById("vehicleList");
+
+  list.textContent = "Loading vehicles...";
+
+  const { data, error } =
+    await db
+      .from("vehicles")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+  if (error) {
+    list.textContent = error.message;
+    return;
+  }
+
+  currentVehicles = data || [];
+
+  displayVehicles();
+
+}
+
+// DISPLAY VEHICLES
+
+function displayVehicles() {
+
+  const list = document.getElementById("vehicleList");
+
+  list.innerHTML = "";
+
+  if (currentVehicles.length === 0) {
+    list.textContent = "No vehicles added yet.";
+    return;
+  }
+
+  currentVehicles.forEach(vehicle => {
+
+    const card = document.createElement("div");
+
+    card.className = "vehicle-item";
+
+    const img = document.createElement("img");
+    img.src = vehicle.photo_url || "https://placehold.co/600x400?text=Vehicle";
+
+    const title = document.createElement("h3");
+    title.textContent = vehicle.name || "";
+
+    const details = document.createElement("p");
+    details.textContent =
+      "Year: " + (vehicle.year || "-") +
+      " | Owner: " + (vehicle.owner || "-") +
+      " | Price: " + (vehicle.price || "-");
+
+    const edit = document.createElement("button");
+    edit.className = "edit-btn";
+    edit.textContent = "EDIT";
+    edit.onclick = () => editVehicle(vehicle.id);
+
+    const remove = document.createElement("button");
+    remove.className = "delete-btn";
+    remove.textContent = "DELETE";
+    remove.onclick = () => deleteVehicle(vehicle.id);
+
+    card.appendChild(img);
+    card.appendChild(title);
+    card.appendChild(details);
+    card.appendChild(edit);
+    card.appendChild(remove);
+
+    list.appendChild(card);
+
+  });
+
+}
+
+// SAVE VEHICLE
+
+async function saveVehicle() {
+
+  const message = document.getElementById("message");
+
+  const name = document.getElementById("vehicleName").value.trim();
+  const category = document.getElementById("category").value;
+  const year = document.getElementById("year").value;
+  const owner = document.getElementById("owner").value.trim();
+  const price = document.getElementById("price").value;
+  const km = document.getElementById("km").value;
+  const fuel = document.getElementById("fuel").value.trim();
+  const description = document.getElementById("description").value.trim();
+
+  const editId = document.getElementById("editId").value;
+
+  const photoFile = document.getElementById("photo").files[0];
+
+  if (!name || !category || !year || !owner) {
+    message.textContent = "Please fill Name, Category, Year and Owner.";
+    return;
+  }
+
+  if (photoFile && !photoFile.type.startsWith("image/")) {
+    message.textContent = "Please select an image file.";
+    return;
+  }
+
+  if (photoFile && photoFile.size > 5 * 1024 * 1024) {
+    message.textContent = "Image must be smaller than 5 MB.";
+    return;
+  }
+
+  message.textContent = "Saving vehicle...";
+
+  try {
+
+    const { data: sessionData } =
+      await db.auth.getSession();
+
+    if (!sessionData.session) {
+      throw new Error("Please login again.");
+    }
+
+    let photoUrl = null;
+
+    if (photoFile) {
+
+      const extension =
+        photoFile.name.split(".").pop().toLowerCase();
+
+      const filePath =
+        sessionData.session.user.id +
+        "/" + Date.now() + "." + extension;
+
+      const { error: uploadError } =
+        await db.storage
+          .from("vehicle-photos")
+          .upload(filePath, photoFile, {
+            upsert: false
+          });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicData } =
+        db.storage
+          .from("vehicle-photos")
+          .getPublicUrl(filePath);
+
+      photoUrl = publicData.publicUrl;
+
+    }
+
+    const vehicleData = {
+      name: name,
+      category: category,
+      year: Number(year),
+      owner: owner,
+      price: price ? Number(price) : null,
+      km: km ? Number(km) : null,
+      fuel_type: fuel || null,
+      description: description || null
+    };
+
+    if (photoUrl) {
+      vehicleData.photo_url = photoUrl;
+    }
+
+    let result;
+
+    if (editId) {
+
+      result = await db
+        .from("vehicles")
+        .update(vehicleData)
+        .eq("id", editId);
+
+    } else {
+
+      if (!photoUrl) {
+        throw new Error("Please select a vehicle photo.");
+      }
+
+      result = await db
+        .from("vehicles")
+        .insert(vehicleData);
+
+    }
+
+    if (result.error) throw result.error;
+
+    message.textContent = "Vehicle saved successfully!";
+
+    clearForm();
+
+    await loadVehicles();
+
+  } catch (error) {
+
+    message.textContent = error.message;
+
+  }
+
+}
+
+// EDIT VEHICLE
+
+function editVehicle(id) {
+
+  const vehicle = currentVehicles.find(v => v.id === id);
+
+  if (!vehicle) return;
+
+  document.getElementById("editId").value = vehicle.id;
+  document.getElementById("vehicleName").value = vehicle.name || "";
+  document.getElementById("category").value = vehicle.category || "";
+  document.getElementById("year").value = vehicle.year || "";
+  document.getElementById("owner").value = vehicle.owner || "";
+  document.getElementById("price").value = vehicle.price || "";
+  document.getElementById("km").value = vehicle.km || "";
+  document.getElementById("fuel").value = vehicle.fuel_type || "";
+  document.getElementById("description").value = vehicle.description || "";
+
+  document.getElementById("message").textContent =
+    "Editing vehicle. Choose a new photo only if you want to replace it.";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+// DELETE VEHICLE
+
+async function deleteVehicle(id) {
+
+  if (!confirm("Are you sure you want to delete this vehicle?")) {
+    return;
+  }
+
+  const { error } =
+    await db
+      .from("vehicles")
+      .delete()
+      .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("Vehicle deleted successfully.");
+
+  await loadVehicles();
+
+}
+
+// CLEAR FORM
+
+function clearForm() {
+
+  document.getElementById("editId").value = "";
+  document.getElementById("vehicleName").value = "";
+  document.getElementById("category").value = "";
+  document.getElementById("year").value = "";
+  document.getElementById("owner").value = "";
+  document.getElementById("price").value = "";
+  document.getElementById("km").value = "";
+  document.getElementById("fuel").value = "";
+  document.getElementById("description").value = "";
+  document.getElementById("photo").value = "";
+
+}
+
+// LOGOUT
+
+async function adminLogout() {
+
+  await db.auth.signOut();
+
+  document.getElementById("dashboard").classList.add("hidden");
+
+  document.getElementById("loginBox").classList.remove("hidden");
+
+  document.getElementById("email").value = "";
+  document.getElementById("password").value = "";
+
+}
+
+// CHECK EXISTING SESSION
+
+async function checkAdminSession() {
+
+  const { data } = await db.auth.getSession();
+
+  if (!data.session) return;
+
+  try {
+    await verifyAdmin(data.session.user.id);
+  } catch (error) {
+    document.getElementById("loginMessage").textContent =
+      error.message;
+  }
+
+}
+
+checkAdminSession();
+
+</script>
+
+</body>
+</html>
+
