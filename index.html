@@ -22,12 +22,13 @@ body {
 header {
   background: #c90000;
   color: white;
-  padding: 22px 15px;
+  padding: 25px 15px;
   text-align: center;
 }
 
 header h1 {
-  font-size: 30px;
+  font-size: 32px;
+  font-weight: bold;
 }
 
 header p {
@@ -41,8 +42,12 @@ nav {
   flex-wrap: wrap;
   gap: 10px;
   padding: 15px;
-  background: #fff;
+  background: white;
   border-bottom: 1px solid #ddd;
+}
+
+button {
+  cursor: pointer;
 }
 
 nav button {
@@ -51,7 +56,6 @@ nav button {
   border: none;
   padding: 11px 18px;
   border-radius: 5px;
-  cursor: pointer;
 }
 
 h2 {
@@ -74,12 +78,56 @@ h2 {
   border: 2px solid #c90000;
   color: #c90000;
   border-radius: 5px;
-  cursor: pointer;
 }
 
-.categories button:hover {
+.categories button:hover,
+.categories button.active {
   background: #c90000;
   color: white;
+}
+
+#loginBox {
+  max-width: 400px;
+  margin: 25px auto;
+  padding: 22px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px #eee;
+}
+
+#loginBox h2 {
+  margin-top: 0;
+}
+
+#loginBox input {
+  width: 100%;
+  padding: 13px;
+  margin: 9px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.main-button {
+  width: 100%;
+  padding: 13px;
+  background: #c90000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+#loginMessage {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+#customerArea {
+  text-align: center;
+  margin: 15px;
 }
 
 #vehicles {
@@ -94,29 +142,97 @@ h2 {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px #ddd;
+  cursor: pointer;
+  background: white;
 }
 
 .vehicle img {
   width: 100%;
-  height: 160px;
+  height: 170px;
   object-fit: cover;
   background: #eee;
 }
 
 .vehicle h3 {
   padding: 10px;
+  color: #c90000;
 }
 
 .vehicle p {
   padding: 0 10px 10px;
 }
 
+.vehicle button {
+  width: calc(100% - 20px);
+  margin: 0 10px 12px;
+  padding: 10px;
+  background: #c90000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+#detailBox {
+  display: none;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+#detailBox img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+}
+
+.detail-line {
+  padding: 9px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.contact-button {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  background: #168b42;
+  padding: 13px;
+  border-radius: 5px;
+  margin-top: 12px;
+}
+
+.call-button {
+  background: #c90000;
+}
+
 footer {
   background: #c90000;
   color: white;
   text-align: center;
-  padding: 20px;
-  margin-top: 25px;
+  padding: 22px;
+  margin-top: 30px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media(max-width: 480px) {
+  header h1 {
+    font-size: 27px;
+  }
+
+  #vehicles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .vehicle img {
+    height: 120px;
+  }
 }
 </style>
 </head>
@@ -128,89 +244,452 @@ footer {
   <p>ALL TYPES OF USED VEHICLES</p>
 </header>
 
+<div id="customerArea" class="hidden">
+  <p id="welcomeText"></p>
+  <button onclick="logoutCustomer()"
+    style="padding:9px 16px;background:#555;color:white;border:0;border-radius:5px;">
+    Logout
+  </button>
+</div>
+
+<!-- CUSTOMER LOGIN -->
+
+<div id="loginBox">
+  <h2>Customer Login</h2>
+
+  <input
+    id="customerName"
+    type="text"
+    placeholder="Enter Your Name"
+    maxlength="100"
+  >
+
+  <input
+    id="customerPhone"
+    type="tel"
+    placeholder="Enter Phone Number"
+    maxlength="16"
+  >
+
+  <button class="main-button" onclick="customerLogin()">
+    Continue
+  </button>
+
+  <p id="loginMessage"></p>
+</div>
+
 <h2>OUR CATEGORIES</h2>
 
 <div class="categories">
-  <button onclick="showCategory('All')">All Vehicles</button>
-  <button onclick="showCategory('Diesel')">Car - Diesel</button>
-  <button onclick="showCategory('Petrol')">Car - Petrol</button>
-  <button onclick="showCategory('EV')">Car - EV</button>
-  <button onclick="showCategory('Bike')">Bike</button>
-  <button onclick="showCategory('Scooty')">Scooty</button>
+  <button class="active" onclick="showCategory('All', this)">
+    All Vehicles
+  </button>
+
+  <button onclick="showCategory('Diesel', this)">
+    Car - Diesel
+  </button>
+
+  <button onclick="showCategory('Petrol', this)">
+    Car - Petrol
+  </button>
+
+  <button onclick="showCategory('EV', this)">
+    Car - EV
+  </button>
+
+  <button onclick="showCategory('Bike', this)">
+    Bike
+  </button>
+
+  <button onclick="showCategory('Scooty', this)">
+    Scooty
+  </button>
 </div>
 
 <h2>AVAILABLE VEHICLES</h2>
 
+<p id="vehicleMessage" style="text-align:center;padding:10px;">
+  Loading vehicles...
+</p>
+
 <div id="vehicles"></div>
 
+<!-- VEHICLE FULL DETAILS -->
+
+<div id="detailBox">
+  <button onclick="closeDetails()"
+    style="padding:8px 14px;background:#555;color:white;border:0;border-radius:5px;margin-bottom:15px;">
+    Close
+  </button>
+
+  <div id="detailContent"></div>
+
+  <a
+    id="whatsappButton"
+    class="contact-button"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    WhatsApp Enquiry
+  </a>
+
+  <a
+    href="tel:+919562010485"
+    class="contact-button call-button"
+  >
+    Call: +91 95620 10485
+  </a>
+</div>
+
 <footer>
-  <p>ACB MOTORS</p>
+  <h3>ACB MOTORS</h3>
+  <p>ALL TYPES OF USED VEHICLES</p>
   <p>Contact: +91 95620 10485</p>
 </footer>
 
-<script>
-const vehicles = [
-  {
-    name: "Example Car",
-    year: "2020",
-    owner: "1st Owner",
-    category: "Diesel",
-    photo: "https://placehold.co/600x400?text=Car"
-  },
-  {
-    name: "Example Bike",
-    year: "2022",
-    owner: "1st Owner",
-    category: "Bike",
-    photo: "https://placehold.co/600x400?text=Bike"
-  },
-  {
-    name: "Example Scooty",
-    year: "2021",
-    owner: "2nd Owner",
-    category: "Scooty",
-    photo: "https://placehold.co/600x400?text=Scooty"
-  }
-];
-
-function showCategory(category) {
-  const container = document.getElementById("vehicles");
-  container.innerHTML = "";
-
-  const filtered = category === "All"
-    ? vehicles
-    : vehicles.filter(v => v.category === category);
-
-  filtered.forEach(vehicle => {
-    container.innerHTML += `
-      <div class="vehicle">
-        <img src="${vehicle.photo}" alt="${vehicle.name}">
-        <h3>${vehicle.name}</h3>
-        <p>Year: ${vehicle.year}</p>
-        <p>Owner: ${vehicle.owner}</p>
-      </div>
-    `;
-  });
-}
-
-showCategory("All");
-</script>
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL = "https://tcaewtllgfohthboyivb.supabase.co";
 
-const SUPABASE_KEY = "sb_publishable_WvQQ7IHQr9kQf-S07LY65A_U66frylM";
+const SUPABASE_URL =
+  "https://tcaewtllgfohthboyivb.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_WvQQ7IHQr9kQf-S07LY65A_U66frylM";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
-console.log("ACB MOTORS Supabase Connected!");
+let loggedIn = false;
+let currentCategory = "All";
+let allVehicles = [];
+
+const imagePlaceholder =
+  "https://placehold.co/600x400?text=ACB+MOTORS";
+
+// CUSTOMER LOGIN
+
+async function customerLogin() {
+
+  const name = document
+    .getElementById("customerName")
+    .value.trim();
+
+  const phone = document
+    .getElementById("customerPhone")
+    .value.trim();
+
+  const message = document.getElementById("loginMessage");
+
+  if (name.length < 2) {
+    message.textContent = "Please enter your name.";
+    return;
+  }
+
+  if (!/^[0-9+ -]{10,16}$/.test(phone)) {
+    message.textContent = "Please enter a valid phone number.";
+    return;
+  }
+
+  message.textContent = "Please wait...";
+
+  try {
+
+    const { data, error } =
+      await supabaseClient.auth.signInAnonymously();
+
+    if (error) throw error;
+
+    const userId = data.user.id;
+
+    const { error: insertError } =
+      await supabaseClient
+        .from("customers")
+        .insert({
+          name: name,
+          phone: phone,
+          user_id: userId
+        });
+
+    if (insertError) throw insertError;
+
+    loggedIn = true;
+
+    document.getElementById("loginBox").classList.add("hidden");
+
+    document.getElementById("customerArea").classList.remove("hidden");
+
+    document.getElementById("welcomeText").textContent =
+      "Welcome, " + name;
+
+    message.textContent = "";
+
+    await loadVehicles();
+
+  } catch (error) {
+
+    message.textContent =
+      "Login Error: " + error.message;
+
+  }
+}
+
+// CHECK EXISTING LOGIN
+
+async function checkLogin() {
+
+  const { data } =
+    await supabaseClient.auth.getSession();
+
+  if (!data.session) {
+    await loadVehicles();
+    return;
+  }
+
+  const userId = data.session.user.id;
+
+  const { data: customer, error } =
+    await supabaseClient
+      .from("customers")
+      .select("name, phone")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+  if (error || !customer) {
+    await loadVehicles();
+    return;
+  }
+
+  loggedIn = true;
+
+  document.getElementById("loginBox").classList.add("hidden");
+
+  document.getElementById("customerArea").classList.remove("hidden");
+
+  document.getElementById("welcomeText").textContent =
+    "Welcome, " + customer.name;
+
+  await loadVehicles();
+}
+
+// LOAD VEHICLES FROM DATABASE
+
+async function loadVehicles() {
+
+  const container = document.getElementById("vehicles");
+
+  const message = document.getElementById("vehicleMessage");
+
+  container.innerHTML = "";
+
+  message.textContent = "Loading vehicles...";
+
+  let query = supabaseClient
+    .from("vehicles")
+    .select(
+      loggedIn
+        ? "*"
+        : "id,name,category,year,owner,photo_url"
+    )
+    .order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) {
+    message.textContent = "Error loading vehicles: " + error.message;
+    return;
+  }
+
+  allVehicles = data || [];
+
+  displayVehicles();
+
+}
+
+// SHOW CATEGORY
+
+function showCategory(category, button) {
+
+  currentCategory = category;
+
+  document.querySelectorAll(".categories button")
+    .forEach(btn => btn.classList.remove("active"));
+
+  button.classList.add("active");
+
+  displayVehicles();
+
+}
+
+// DISPLAY VEHICLE CARDS
+
+function displayVehicles() {
+
+  const container = document.getElementById("vehicles");
+
+  const message = document.getElementById("vehicleMessage");
+
+  container.innerHTML = "";
+
+  const filtered = currentCategory === "All"
+    ? allVehicles
+    : allVehicles.filter(vehicle =>
+        vehicle.category === currentCategory
+      );
+
+  if (filtered.length === 0) {
+    message.textContent = "No vehicles available in this category.";
+    return;
+  }
+
+  message.textContent = "";
+
+  filtered.forEach(vehicle => {
+
+    const card = document.createElement("div");
+    card.className = "vehicle";
+
+    const image = document.createElement("img");
+    image.src = vehicle.photo_url || imagePlaceholder;
+    image.alt = vehicle.name || "Vehicle";
+    image.onerror = function() {
+      this.src = imagePlaceholder;
+    };
+
+    const title = document.createElement("h3");
+    title.textContent = vehicle.name || "Vehicle";
+
+    const year = document.createElement("p");
+    year.textContent = "Year: " + (vehicle.year || "Not available");
+
+    const owner = document.createElement("p");
+    owner.textContent = "Owner: " + (vehicle.owner || "Not available");
+
+    const button = document.createElement("button");
+    button.textContent = loggedIn ? "View Full Details" : "Login to View Details";
+
+    button.onclick = function() {
+      if (!loggedIn) {
+        document.getElementById("loginBox").scrollIntoView({
+          behavior: "smooth"
+        });
+        document.getElementById("loginMessage").textContent =
+          "Please login to view full details.";
+      } else {
+        showDetails(vehicle);
+      }
+    };
+
+    card.appendChild(image);
+    card.appendChild(title);
+    card.appendChild(year);
+    card.appendChild(owner);
+    card.appendChild(button);
+
+    container.appendChild(card);
+
+  });
+
+}
+
+// SHOW FULL DETAILS
+
+function showDetails(vehicle) {
+
+  const detailBox = document.getElementById("detailBox");
+
+  const content = document.getElementById("detailContent");
+
+  content.innerHTML = "";
+
+  const image = document.createElement("img");
+  image.src = vehicle.photo_url || imagePlaceholder;
+  image.alt = vehicle.name || "Vehicle";
+
+  content.appendChild(image);
+
+  function addDetail(label, value) {
+
+    const line = document.createElement("p");
+
+    line.className = "detail-line";
+
+    line.textContent =
+      label + ": " +
+      (value === null || value === undefined || value === ""
+        ? "Not available"
+        : value);
+
+    content.appendChild(line);
+  }
+
+  addDetail("Vehicle", vehicle.name);
+  addDetail("Category", vehicle.category);
+  addDetail("Year", vehicle.year);
+  addDetail("Owner", vehicle.owner);
+  addDetail("Price", vehicle.price);
+  addDetail("Kilometers", vehicle.km);
+  addDetail("Fuel Type", vehicle.fuel_type);
+  addDetail("Description", vehicle.description);
+
+  const whatsappMessage =
+    "Hello ACB MOTORS, I am interested in " +
+    (vehicle.name || "this vehicle") +
+    ". Please share more details.";
+
+  document.getElementById("whatsappButton").href =
+    "https://wa.me/919562010485?text=" +
+    encodeURIComponent(whatsappMessage);
+
+  detailBox.style.display = "block";
+
+  detailBox.scrollIntoView({
+    behavior: "smooth"
+  });
+
+}
+
+// CLOSE DETAILS
+
+function closeDetails() {
+
+  document.getElementById("detailBox").style.display = "none";
+
+}
+
+// LOGOUT
+
+async function logoutCustomer() {
+
+  await supabaseClient.auth.signOut();
+
+  loggedIn = false;
+
+  document.getElementById("customerArea").classList.add("hidden");
+
+  document.getElementById("loginBox").classList.remove("hidden");
+
+  document.getElementById("customerName").value = "";
+
+  document.getElementById("customerPhone").value = "";
+
+  document.getElementById("loginMessage").textContent = "";
+
+  document.getElementById("detailBox").style.display = "none";
+
+  await loadVehicles();
+
+}
+
+// START WEBSITE
+
+checkLogin();
+
 </script>
 
 </body>
 </html>
-
