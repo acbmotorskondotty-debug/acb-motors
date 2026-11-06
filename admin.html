@@ -413,10 +413,9 @@ function displayVehicles() {
 
 }
 
-// SAVE VEHICLE
+// SAVE VEHICLE - MULTIPLE PHOTOS
 
 async function saveVehicle() {
-
   const message = document.getElementById("message");
 
   const name = document.getElementById("vehicleName").value.trim();
@@ -427,117 +426,114 @@ async function saveVehicle() {
   const km = document.getElementById("km").value;
   const fuel = document.getElementById("fuel").value.trim();
   const description = document.getElementById("description").value.trim();
-
   const editId = document.getElementById("editId").value;
 
-  const photoFile = document.getElementById("photo").files[0];
+  const photoFiles = Array.from(
+    document.getElementById("photo").files
+  );
 
   if (!name || !category || !year || !owner) {
     message.textContent = "Please fill Name, Category, Year and Owner.";
     return;
   }
 
-  if (photoFile && !photoFile.type.startsWith("image/")) {
-    message.textContent = "Please select an image file.";
-    return;
+  for (const file of photoFiles) {
+    if (!file.type.startsWith("image/")) {
+      message.textContent = "Please select only image files.";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      message.textContent = "Each image must be smaller than 5 MB.";
+      return;
+    }
   }
 
-  if (photoFile && photoFile.size > 5 * 1024 * 1024) {
-    message.textContent = "Image must be smaller than 5 MB.";
-    return;
-  }
-
-  message.textContent = "Saving vehicle...";
+  message.textContent = "Uploading photos...";
 
   try {
-
-    const { data: sessionData } =
-      await db.auth.getSession();
+    const { data: sessionData } = await db.auth.getSession();
 
     if (!sessionData.session) {
       throw new Error("Please login again.");
     }
 
-    let photoUrl = null;
+    let photoUrls = [];
 
-    if (photoFile) {
+    if (editId) {
+      const oldVehicle = currentVehicles.find(v => v.id == editId);
+      photoUrls = oldVehicle?.photo_urls || [];
 
-      const extension =
-        photoFile.name.split(".").pop().toLowerCase();
+      if (photoUrls.length === 0 && oldVehicle?.photo_url) {
+        photoUrls = [oldVehicle.photo_url];
+      }
+    }
+
+    for (const file of photoFiles) {
+      const extension = file.name.split(".").pop().toLowerCase();
 
       const filePath =
         sessionData.session.user.id +
-        "/" + Date.now() + "." + extension;
+        "/" + Date.now() + "-" +
+        Math.random().toString(36).slice(2) +
+        "." + extension;
 
-      const { error: uploadError } =
-        await db.storage
-          .from("vehicle-photos")
-          .upload(filePath, photoFile, {
-            upsert: false
-          });
+      const { error: uploadError } = await db.storage
+        .from("vehicle-photos")
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      const { data: publicData } =
-        db.storage
-          .from("vehicle-photos")
-          .getPublicUrl(filePath);
+      const { data: publicData } = db.storage
+        .from("vehicle-photos")
+        .getPublicUrl(filePath);
 
-      photoUrl = publicData.publicUrl;
+      photoUrls.push(publicData.publicUrl);
+    }
 
+    if (!editId && photoUrls.length === 0) {
+      throw new Error("Please select at least one vehicle photo.");
     }
 
     const vehicleData = {
-      name: name,
-      category: category,
+      name,
+      category,
       year: Number(year),
-      owner: owner,
+      owner,
       price: price ? Number(price) : null,
       km: km ? Number(km) : null,
       fuel_type: fuel || null,
-      description: description || null
+      description: description || null,
+      photo_urls: photoUrls,
+      photo_url: photoUrls[0] || null
     };
-
-    if (photoUrl) {
-      vehicleData.photo_url = photoUrl;
-    }
 
     let result;
 
     if (editId) {
-
       result = await db
         .from("vehicles")
         .update(vehicleData)
         .eq("id", editId);
-
     } else {
-
-      if (!photoUrl) {
-        throw new Error("Please select a vehicle photo.");
-      }
-
       result = await db
         .from("vehicles")
         .insert(vehicleData);
-
     }
 
     if (result.error) throw result.error;
 
-    message.textContent = "Vehicle saved successfully!";
+    message.textContent = "Vehicle and photos saved successfully!";
 
     clearForm();
-
     await loadVehicles();
 
   } catch (error) {
-
-    message.textContent = error.message;
-
+    message.textContent = "Error: " + error.message;
   }
-
 }
+
+
 
 // EDIT VEHICLE
 
