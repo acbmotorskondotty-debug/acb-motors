@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +12,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: Arial, sans-serif;
   background: #fff;
@@ -87,12 +89,13 @@ h2 {
 }
 
 .categories button {
-  padding: 12px 20px;
+  padding: 12px 25px;
   background: white;
   border: 2px solid #c90000;
   color: #c90000;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 15px;
 }
 
 .categories button.active,
@@ -129,7 +132,9 @@ h2 {
   color: #c90000;
 }
 
-.vehicle p { padding: 0 10px 10px; }
+.vehicle p {
+  padding: 0 10px 10px;
+}
 
 .vehicle button {
   width: calc(100% - 20px);
@@ -151,14 +156,6 @@ h2 {
   border-radius: 10px;
 }
 
-#detailBox img {
-  width: 100%;
-  max-height: 300px;
-  object-fit: contain;
-  background: #eee;
-  margin-bottom: 10px;
-}
-
 .gallery {
   display: flex;
   gap: 8px;
@@ -169,13 +166,16 @@ h2 {
 .gallery img {
   min-width: 85%;
   max-width: 85%;
-  height: 250px !important;
+  height: 250px;
   object-fit: contain;
+  background: #eee;
+  border-radius: 5px;
 }
 
 .detail-line {
   padding: 9px 0;
   border-bottom: 1px solid #eee;
+  overflow-wrap: anywhere;
 }
 
 .contact-button {
@@ -189,7 +189,9 @@ h2 {
   margin-top: 12px;
 }
 
-.call-button { background: #c90000; }
+.call-button {
+  background: #c90000;
+}
 
 footer {
   background: #c90000;
@@ -199,7 +201,9 @@ footer {
   margin-top: 30px;
 }
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
 @media(max-width: 480px) {
   header h1 { font-size: 27px; }
@@ -210,7 +214,17 @@ footer {
     padding: 10px;
   }
 
-  .vehicle img { height: 120px; }
+  .vehicle img {
+    height: 120px;
+  }
+
+  .vehicle h3 {
+    font-size: 15px;
+  }
+
+  #detailBox {
+    margin: 10px;
+  }
 }
 </style>
 </head>
@@ -249,12 +263,17 @@ footer {
 <h2>OUR CATEGORIES</h2>
 
 <div class="categories">
-  <button class="active" onclick="showCategory('All', this)">All Vehicles</button>
-  <button onclick="showCategory('Diesel', this)">Car - Diesel</button>
-  <button onclick="showCategory('Petrol', this)">Car - Petrol</button>
-  <button onclick="showCategory('EV', this)">Car - EV</button>
-  <button onclick="showCategory('Bike', this)">Bike</button>
-  <button onclick="showCategory('Scooty', this)">Scooty</button>
+  <button class="active" onclick="showCategory('All', this)">
+    All Vehicles
+  </button>
+
+  <button onclick="showCategory('Bike', this)">
+    Bike
+  </button>
+
+  <button onclick="showCategory('Scooty', this)">
+    Scooty
+  </button>
 </div>
 
 <h2>AVAILABLE VEHICLES</h2>
@@ -266,6 +285,7 @@ footer {
 <div id="vehicles"></div>
 
 <div id="detailBox">
+
   <button onclick="closeDetails()"
     style="padding:8px 14px;background:#555;color:white;border:0;border-radius:5px;margin-bottom:15px;">
     Close
@@ -282,6 +302,7 @@ footer {
     class="contact-button call-button">
     Call: +91 95620 10485
   </a>
+
 </div>
 
 <footer>
@@ -345,12 +366,15 @@ async function customerLogin() {
     if (insertError) throw insertError;
 
     loggedIn = true;
+
     document.getElementById("loginBox").classList.add("hidden");
     document.getElementById("customerArea").classList.remove("hidden");
+
     document.getElementById("welcomeText").textContent =
       "Welcome, " + name;
 
     message.textContent = "";
+
     await loadVehicles();
 
   } catch (error) {
@@ -381,8 +405,10 @@ async function checkLogin() {
   }
 
   loggedIn = true;
+
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("customerArea").classList.remove("hidden");
+
   document.getElementById("welcomeText").textContent =
     "Welcome, " + customer.name;
 
@@ -411,7 +437,11 @@ async function loadVehicles() {
     return;
   }
 
-  allVehicles = data || [];
+  // ONLY BIKE AND SCOOTY
+  allVehicles = (data || []).filter(vehicle =>
+    ["Bike", "Scooty"].includes(vehicle.category)
+  );
+
   displayVehicles();
 }
 
@@ -423,6 +453,8 @@ function showCategory(category, button) {
     .forEach(btn => btn.classList.remove("active"));
 
   button.classList.add("active");
+
+  closeDetails();
   displayVehicles();
 }
 
@@ -448,13 +480,20 @@ function displayVehicles() {
     const card = document.createElement("div");
     card.className = "vehicle";
 
-    const photos = vehicle.photo_urls || [];
-    const firstPhoto = photos[0] || vehicle.photo_url || imagePlaceholder;
+    const photos = Array.isArray(vehicle.photo_urls)
+      ? vehicle.photo_urls
+      : [];
+
+    const firstPhoto =
+      photos[0] || vehicle.photo_url || imagePlaceholder;
 
     const image = document.createElement("img");
     image.src = firstPhoto;
     image.alt = vehicle.name || "Vehicle";
-    image.onerror = () => { image.src = imagePlaceholder; };
+
+    image.onerror = () => {
+      image.src = imagePlaceholder;
+    };
 
     const title = document.createElement("h3");
     title.textContent = vehicle.name || "Vehicle";
@@ -466,6 +505,7 @@ function displayVehicles() {
     owner.textContent = "Owner: " + (vehicle.owner || "Not available");
 
     const button = document.createElement("button");
+
     button.textContent = loggedIn
       ? "View Full Details"
       : "Login to View Details";
@@ -475,8 +515,10 @@ function displayVehicles() {
         document.getElementById("loginBox").scrollIntoView({
           behavior: "smooth"
         });
+
         document.getElementById("loginMessage").textContent =
           "Please login to view full details.";
+
       } else {
         showDetails(vehicle);
       }
@@ -487,14 +529,15 @@ function displayVehicles() {
   });
 }
 
-// FULL DETAILS + PHOTO GALLERY
+// FULL DETAILS + MULTIPLE PHOTO GALLERY
 function showDetails(vehicle) {
   const detailBox = document.getElementById("detailBox");
   const content = document.getElementById("detailContent");
 
   content.innerHTML = "";
 
-  const photos = vehicle.photo_urls?.length
+  const photos = Array.isArray(vehicle.photo_urls) &&
+                 vehicle.photo_urls.length
     ? vehicle.photo_urls
     : [vehicle.photo_url || imagePlaceholder];
 
@@ -503,9 +546,14 @@ function showDetails(vehicle) {
 
   photos.forEach(url => {
     const img = document.createElement("img");
+
     img.src = url;
     img.alt = vehicle.name || "Vehicle";
-    img.onerror = () => { img.src = imagePlaceholder; };
+
+    img.onerror = () => {
+      img.src = imagePlaceholder;
+    };
+
     gallery.appendChild(img);
   });
 
@@ -514,9 +562,12 @@ function showDetails(vehicle) {
   function addDetail(label, value) {
     const line = document.createElement("p");
     line.className = "detail-line";
+
     line.textContent = label + ": " +
       (value === null || value === undefined || value === ""
-        ? "Not available" : value);
+        ? "Not available"
+        : value);
+
     content.appendChild(line);
   }
 
@@ -539,7 +590,10 @@ function showDetails(vehicle) {
     encodeURIComponent(whatsappMessage);
 
   detailBox.style.display = "block";
-  detailBox.scrollIntoView({ behavior: "smooth" });
+
+  detailBox.scrollIntoView({
+    behavior: "smooth"
+  });
 }
 
 // CLOSE DETAILS
@@ -555,8 +609,10 @@ async function logoutCustomer() {
 
   document.getElementById("customerArea").classList.add("hidden");
   document.getElementById("loginBox").classList.remove("hidden");
+
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
+
   document.getElementById("loginMessage").textContent = "";
   document.getElementById("detailBox").style.display = "none";
 
