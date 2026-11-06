@@ -713,7 +713,66 @@ async function logoutCustomer() {
   await loadVehicles();
 
 }
+// ADMIN LOGIN
 
+async function adminLogin() {
+
+  const email = document.getElementById("adminEmail").value.trim();
+  const password = document.getElementById("adminPassword").value;
+  const message = document.getElementById("adminMessage");
+
+  if (!email || !password) {
+    message.textContent = "Enter email and password.";
+    return;
+  }
+
+  message.textContent = "Checking admin account...";
+
+  try {
+
+    // Sign out existing customer session
+    await supabaseClient.auth.signOut();
+
+    // Admin email and password login
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+    if (error) throw error;
+
+    // Check admin permission in database
+    const { data: admin, error: adminError } =
+      await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+
+    if (adminError) throw adminError;
+
+    if (!admin) {
+      await supabaseClient.auth.signOut();
+      throw new Error("You are not an authorized admin.");
+    }
+
+    message.textContent = "Admin login successful!";
+
+    document.getElementById("adminLoginBox").classList.add("hidden");
+
+    document.getElementById("customerArea").classList.add("hidden");
+
+    loggedIn = true;
+
+    await loadVehicles();
+
+  } catch (error) {
+
+    message.textContent = error.message;
+
+  }
+}
 // START WEBSITE
 
 checkLogin();
