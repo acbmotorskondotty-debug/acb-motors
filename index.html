@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ACB MOTORS - Used Vehicles</title>
+<title>ACB MOTORS | Premium Used Vehicles</title>
 
 <style>
 * {
@@ -13,59 +13,176 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background: #fff;
+  background: #f7f7f7;
   color: #222;
 }
 
+/* HEADER */
 header {
   background: #c90000;
   color: white;
-  padding: 25px 15px;
-  text-align: center;
+  padding: 17px 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 3px 15px #0002;
 }
 
-header h1 { font-size: 32px; }
-
-header p {
-  margin-top: 8px;
+.logo h1 {
+  font-size: 27px;
   letter-spacing: 1px;
 }
 
-h2 {
-  text-align: center;
-  margin: 25px 0 15px;
+.logo p {
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-top: 5px;
+}
+
+/* THREE DOT MENU */
+.menu-area {
+  position: relative;
+}
+
+.menu-button {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+.menu-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 48px;
+  width: 190px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px #0003;
+  overflow: hidden;
+}
+
+.menu-dropdown.show {
+  display: block;
+}
+
+.menu-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 14px 18px;
+  background: white;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  color: #333;
+}
+
+.menu-dropdown button:hover {
+  background: #fff0f0;
   color: #c90000;
 }
 
+/* HERO */
+.hero {
+  background: linear-gradient(120deg, #a90000, #ed2020);
+  color: white;
+  text-align: center;
+  padding: 65px 20px;
+}
+
+.hero h2 {
+  font-size: 36px;
+  margin-bottom: 14px;
+  color: white;
+}
+
+.hero p {
+  font-size: 15px;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+
+.hero button {
+  background: white;
+  color: #c90000;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* COMMON SECTIONS */
+.section {
+  padding: 35px 5%;
+}
+
+.section-title {
+  text-align: center;
+  color: #c90000;
+  font-size: 25px;
+  margin-bottom: 25px;
+}
+
+.section-title::after {
+  content: "";
+  display: block;
+  width: 55px;
+  height: 3px;
+  background: #c90000;
+  margin: 10px auto;
+}
+
+/* LOGIN */
 #loginBox {
+  display: none;
   max-width: 400px;
   margin: 25px auto;
-  padding: 22px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px #eee;
+  padding: 25px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 25px #0001;
+}
+
+#loginBox h2 {
+  text-align: center;
+  color: #c90000;
+  margin-bottom: 15px;
 }
 
 #loginBox input {
   width: 100%;
-  padding: 13px;
+  padding: 14px;
   margin: 9px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   font-size: 16px;
+  outline-color: #c90000;
 }
 
 .main-button {
   width: 100%;
-  padding: 13px;
+  padding: 14px;
   background: #c90000;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 16px;
-  margin-top: 8px;
+  margin-top: 10px;
   cursor: pointer;
 }
 
@@ -75,27 +192,47 @@ h2 {
   font-size: 14px;
 }
 
+/* CUSTOMER AREA */
 #customerArea {
   text-align: center;
-  margin: 15px;
+  padding: 15px;
+  background: white;
+  margin: 15px auto;
+  max-width: 450px;
+  border-radius: 10px;
 }
 
+#customerArea button {
+  padding: 9px 18px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* CATEGORIES */
 .categories {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px;
+  gap: 12px;
 }
 
 .categories button {
-  padding: 12px 25px;
+  padding: 12px 27px;
   background: white;
-  border: 2px solid #c90000;
+  border: 1px solid #c90000;
   color: #c90000;
-  border-radius: 5px;
+  border-radius: 30px;
   cursor: pointer;
   font-size: 15px;
+  transition: .2s;
 }
 
 .categories button.active,
@@ -104,76 +241,97 @@ h2 {
   color: white;
 }
 
+/* VEHICLES */
 #vehicles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 22px;
 }
 
 .vehicle {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px #ddd;
-  cursor: pointer;
   background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px #00000012;
+  transition: .25s;
+  cursor: pointer;
+}
+
+.vehicle:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px #0002;
 }
 
 .vehicle img {
   width: 100%;
-  height: 170px;
+  height: 190px;
   object-fit: cover;
   background: #eee;
 }
 
 .vehicle h3 {
-  padding: 10px;
+  padding: 13px 14px 8px;
   color: #c90000;
+  font-size: 18px;
 }
 
 .vehicle p {
-  padding: 0 10px 10px;
+  padding: 3px 14px;
+  font-size: 14px;
+  color: #666;
 }
 
 .vehicle button {
-  width: calc(100% - 20px);
-  margin: 0 10px 12px;
-  padding: 10px;
+  width: calc(100% - 28px);
+  margin: 14px;
+  padding: 12px;
   background: #c90000;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 14px;
 }
 
+/* DETAILS */
 #detailBox {
   display: none;
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+  max-width: 650px;
+  margin: 25px auto;
+  padding: 22px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px #0001;
+}
+
+.close-button {
+  padding: 9px 17px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  margin-bottom: 15px;
 }
 
 .gallery {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   overflow-x: auto;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
 
 .gallery img {
   min-width: 85%;
   max-width: 85%;
-  height: 250px;
+  height: 270px;
   object-fit: contain;
   background: #eee;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 .detail-line {
-  padding: 9px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #eee;
   overflow-wrap: anywhere;
 }
@@ -184,8 +342,8 @@ h2 {
   text-decoration: none;
   color: white;
   background: #168b42;
-  padding: 13px;
-  border-radius: 5px;
+  padding: 14px;
+  border-radius: 8px;
   margin-top: 12px;
 }
 
@@ -193,37 +351,111 @@ h2 {
   background: #c90000;
 }
 
+/* ABOUT */
+.about-box {
+  max-width: 850px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 3px 15px #0000000d;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.about-box strong {
+  color: #c90000;
+}
+
+/* CONTACT */
+.contact-box {
+  max-width: 650px;
+  margin: auto;
+  background: white;
+  padding: 28px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 3px 15px #0000000d;
+}
+
+.contact-box p {
+  margin: 12px;
+}
+
+.contact-box a {
+  color: #c90000;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* FOOTER */
 footer {
-  background: #c90000;
+  background: #a90000;
   color: white;
   text-align: center;
-  padding: 22px;
+  padding: 30px 15px;
   margin-top: 30px;
+  line-height: 1.8;
 }
 
-.hidden {
-  display: none !important;
+footer p {
+  font-size: 13px;
 }
 
-@media(max-width: 480px) {
-  header h1 { font-size: 27px; }
+/* MOBILE */
+@media(max-width: 600px) {
+  header {
+    padding: 14px 17px;
+  }
+
+  .logo h1 {
+    font-size: 23px;
+  }
+
+  .hero {
+    padding: 50px 15px;
+  }
+
+  .hero h2 {
+    font-size: 27px;
+  }
+
+  .section {
+    padding: 28px 12px;
+  }
 
   #vehicles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
-    padding: 10px;
   }
 
   .vehicle img {
-    height: 120px;
+    height: 125px;
   }
 
   .vehicle h3 {
-    font-size: 15px;
+    font-size: 14px;
+    padding: 9px;
+  }
+
+  .vehicle p {
+    font-size: 12px;
+    padding: 3px 9px;
+  }
+
+  .vehicle button {
+    width: calc(100% - 18px);
+    margin: 9px;
+    padding: 10px 5px;
+    font-size: 12px;
   }
 
   #detailBox {
-    margin: 10px;
+    margin: 12px;
+  }
+
+  .gallery img {
+    height: 220px;
   }
 }
 </style>
@@ -231,84 +463,161 @@ footer {
 
 <body>
 
+<!-- HEADER -->
 <header>
-  <h1>ACB MOTORS</h1>
-  <p>ALL TYPES OF USED VEHICLES</p>
+  <div class="logo">
+    <h1>ACB MOTORS</h1>
+    <p>ALL TYPES OF USED VEHICLES</p>
+  </div>
+
+  <div class="menu-area">
+    <button class="menu-button" onclick="toggleMenu()">⋮</button>
+
+    <div class="menu-dropdown" id="menuDropdown">
+      <button onclick="goToSection('home')">⌂ &nbsp; Home</button>
+      <button onclick="goToSection('about')">ℹ &nbsp; About</button>
+      <button onclick="goToSection('contact')">☎ &nbsp; Contact Us</button>
+      <button onclick="openLogin()">👤 &nbsp; Login</button>
+    </div>
+  </div>
 </header>
 
-<div id="customerArea" class="hidden">
-  <p id="welcomeText"></p>
-  <button onclick="logoutCustomer()"
-    style="padding:9px 16px;background:#555;color:white;border:0;border-radius:5px;">
-    Logout
-  </button>
-</div>
+<!-- HOME -->
+<section id="home">
 
-<div id="loginBox">
-  <h2>Customer Login</h2>
+  <div class="hero">
+    <h2>Find Your Perfect Ride</h2>
+    <p>QUALITY USED BIKES & SCOOTIES</p>
+    <button onclick="goToSection('vehiclesSection')">
+      Explore Vehicles
+    </button>
+  </div>
 
-  <input id="customerName" type="text"
-    placeholder="Enter Your Name" maxlength="100">
+  <div id="customerArea" class="hidden">
+    <p id="welcomeText"></p>
+    <button onclick="logoutCustomer()">Logout</button>
+  </div>
 
-  <input id="customerPhone" type="tel"
-    placeholder="Enter Phone Number" maxlength="16">
+  <!-- LOGIN -->
+  <div id="loginBox">
+    <h2>Customer Login</h2>
 
-  <button class="main-button" onclick="customerLogin()">
-    Continue
-  </button>
+    <input id="customerName" type="text"
+      placeholder="Enter Your Name" maxlength="100">
 
-  <p id="loginMessage"></p>
-</div>
+    <input id="customerPhone" type="tel"
+      placeholder="Enter Phone Number" maxlength="16">
 
-<h2>OUR CATEGORIES</h2>
+    <button class="main-button" onclick="customerLogin()">
+      Continue
+    </button>
 
-<div class="categories">
-  <button class="active" onclick="showCategory('All', this)">
-    All Vehicles
-  </button>
+    <button class="main-button"
+      style="background:#555"
+      onclick="closeLogin()">
+      Close
+    </button>
 
-  <button onclick="showCategory('Bike', this)">
-    Bike
-  </button>
+    <p id="loginMessage"></p>
+  </div>
 
-  <button onclick="showCategory('Scooty', this)">
-    Scooty
-  </button>
-</div>
+  <!-- CATEGORIES -->
+  <section class="section" id="vehiclesSection">
+    <h2 class="section-title">OUR CATEGORIES</h2>
 
-<h2>AVAILABLE VEHICLES</h2>
+    <div class="categories">
+      <button class="active" onclick="showCategory('All', this)">
+        All Vehicles
+      </button>
 
-<p id="vehicleMessage" style="text-align:center;padding:10px;">
-  Loading vehicles...
-</p>
+      <button onclick="showCategory('Bike', this)">
+        Bike
+      </button>
 
-<div id="vehicles"></div>
+      <button onclick="showCategory('Scooty', this)">
+        Scooty
+      </button>
+    </div>
+  </section>
 
-<div id="detailBox">
+  <!-- AVAILABLE VEHICLES -->
+  <section class="section">
+    <h2 class="section-title">AVAILABLE VEHICLES</h2>
 
-  <button onclick="closeDetails()"
-    style="padding:8px 14px;background:#555;color:white;border:0;border-radius:5px;margin-bottom:15px;">
-    Close
-  </button>
+    <p id="vehicleMessage" style="text-align:center;padding:15px;">
+      Loading vehicles...
+    </p>
 
-  <div id="detailContent"></div>
+    <div id="vehicles"></div>
 
-  <a id="whatsappButton" class="contact-button"
-    target="_blank" rel="noopener noreferrer">
-    WhatsApp Enquiry
-  </a>
+    <div id="detailBox">
+      <button class="close-button" onclick="closeDetails()">
+        ← Back
+      </button>
 
-  <a href="tel:+919562010485"
-    class="contact-button call-button">
-    Call: +91 95620 10485
-  </a>
+      <div id="detailContent"></div>
 
-</div>
+      <a id="whatsappButton" class="contact-button"
+        target="_blank" rel="noopener noreferrer">
+        WhatsApp Enquiry
+      </a>
 
+      <a href="tel:+919562010485"
+        class="contact-button call-button">
+        Call: +91 95620 10485
+      </a>
+    </div>
+  </section>
+
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <h2 class="section-title">ABOUT ACB MOTORS</h2>
+
+  <div class="about-box">
+    <h2 style="color:#c90000;margin-bottom:12px;">Welcome to ACB MOTORS</h2>
+
+    <p>
+      ACB MOTORS is your destination for quality used vehicles.
+      We help customers find their preferred
+      <strong>Bikes and Scooties</strong>.
+    </p>
+
+    <p>
+      Explore our available vehicles, check their details
+      and contact us directly for enquiries.
+    </p>
+
+    <p><strong>ACB MOTORS - Your Trusted Ride Partner.</strong></p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <h2 class="section-title">CONTACT US</h2>
+
+  <div class="contact-box">
+    <h3 style="color:#c90000;">ACB MOTORS</h3>
+
+    <p>For vehicle enquiries and more details, contact us.</p>
+
+    <p>📞 Phone: <a href="tel:+919562010485">+91 95620 10485</a></p>
+
+    <p>💬 WhatsApp:
+      <a href="https://wa.me/919562010485" target="_blank">
+        Chat with us
+      </a>
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
   <h3>ACB MOTORS</h3>
   <p>ALL TYPES OF USED VEHICLES</p>
   <p>Contact: +91 95620 10485</p>
+  <p>© 2026 ACB MOTORS. All Rights Reserved.</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -331,6 +640,53 @@ let allVehicles = [];
 
 const imagePlaceholder =
 "https://placehold.co/600x400?text=ACB+MOTORS";
+
+// THREE DOT MENU
+function toggleMenu() {
+  document.getElementById("menuDropdown")
+    .classList.toggle("show");
+}
+
+function closeMenu() {
+  document.getElementById("menuDropdown")
+    .classList.remove("show");
+}
+
+// NAVIGATION
+function goToSection(id) {
+  closeMenu();
+
+  const section = document.getElementById(id);
+
+  if (section) {
+    section.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+// OPEN LOGIN
+function openLogin() {
+  closeMenu();
+
+  if (loggedIn) {
+    document.getElementById("customerArea")
+      .scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+
+  const box = document.getElementById("loginBox");
+
+  box.style.display = "block";
+
+  box.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
+
+// CLOSE LOGIN
+function closeLogin() {
+  document.getElementById("loginBox").style.display = "none";
+}
 
 // CUSTOMER LOGIN
 async function customerLogin() {
@@ -367,7 +723,7 @@ async function customerLogin() {
 
     loggedIn = true;
 
-    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("loginBox").style.display = "none";
     document.getElementById("customerArea").classList.remove("hidden");
 
     document.getElementById("welcomeText").textContent =
@@ -406,7 +762,7 @@ async function checkLogin() {
 
   loggedIn = true;
 
-  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("loginBox").style.display = "none";
   document.getElementById("customerArea").classList.remove("hidden");
 
   document.getElementById("welcomeText").textContent =
@@ -437,7 +793,6 @@ async function loadVehicles() {
     return;
   }
 
-  // ONLY BIKE AND SCOOTY
   allVehicles = (data || []).filter(vehicle =>
     ["Bike", "Scooty"].includes(vehicle.category)
   );
@@ -512,9 +867,7 @@ function displayVehicles() {
 
     button.onclick = () => {
       if (!loggedIn) {
-        document.getElementById("loginBox").scrollIntoView({
-          behavior: "smooth"
-        });
+        openLogin();
 
         document.getElementById("loginMessage").textContent =
           "Please login to view full details.";
@@ -608,7 +961,7 @@ async function logoutCustomer() {
   loggedIn = false;
 
   document.getElementById("customerArea").classList.add("hidden");
-  document.getElementById("loginBox").classList.remove("hidden");
+  document.getElementById("loginBox").style.display = "none";
 
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
@@ -618,6 +971,15 @@ async function logoutCustomer() {
 
   await loadVehicles();
 }
+
+// CLOSE MENU WHEN CLICKING OUTSIDE
+document.addEventListener("click", function(event) {
+  const menu = document.querySelector(".menu-area");
+
+  if (!menu.contains(event.target)) {
+    closeMenu();
+  }
+});
 
 // START WEBSITE
 checkLogin();
