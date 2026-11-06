@@ -277,7 +277,36 @@ footer {
 
   <p id="loginMessage"></p>
 </div>
+<!-- ADMIN LOGIN -->
 
+<div style="text-align:center; margin:20px;">
+  <button
+    onclick="document.getElementById('adminLoginBox').classList.toggle('hidden')"
+    style="background:#333;color:white;padding:10px 20px;border:0;border-radius:5px;">
+    Admin Login
+  </button>
+</div>
+
+<div id="adminLoginBox" class="hidden"
+     style="max-width:400px;margin:20px auto;padding:20px;border:1px solid #ddd;border-radius:10px;">
+
+  <h2>Admin Login</h2>
+
+  <input id="adminEmail" type="email"
+         placeholder="Admin Email"
+         style="width:100%;padding:12px;margin:8px 0;">
+
+  <input id="adminPassword" type="password"
+         placeholder="Admin Password"
+         style="width:100%;padding:12px;margin:8px 0;">
+
+  <button onclick="adminLogin()"
+          style="width:100%;padding:12px;background:#c90000;color:white;border:0;border-radius:5px;">
+    Login as Admin
+  </button>
+
+  <p id="adminMessage"></p>
+</div>
 <h2>OUR CATEGORIES</h2>
 
 <div class="categories">
