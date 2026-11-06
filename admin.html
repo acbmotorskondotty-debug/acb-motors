@@ -26,7 +26,9 @@ header {
   padding: 25px 10px;
 }
 
-header h1 { font-size: 30px; }
+header h1 {
+  font-size: 30px;
+}
 
 .container {
   max-width: 700px;
@@ -78,6 +80,7 @@ button {
   padding: 12px;
   margin: 15px 0;
   border-radius: 7px;
+  background: #fff;
 }
 
 .vehicle-item h3 {
@@ -85,44 +88,46 @@ button {
   margin: 10px 0;
 }
 
+/* MANAGE VEHICLE PHOTOS */
 .photo-gallery {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin: 12px 0;
 }
 
 .photo-gallery img {
   width: 100%;
-  height: 160px;
-  object-fit: contain;
+  height: 105px;
+  object-fit: cover;
   background: #eee;
-  border-radius: 5px;
+  border-radius: 7px;
 }
 
-.photo-count {
-  color: #555;
-  font-size: 13px;
-  margin: 8px 0;
-}
-
+/* PREVIEW PHOTOS */
 .preview-gallery {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin: 12px 0;
 }
 
 .preview-item {
-  position: relative;
+  min-width: 0;
+}
+
+.preview-item img,
+.preview-gallery > img {
+  display: block;
+  width: 100%;
+  height: 105px;
+  object-fit: cover;
+  background: #eee;
+  border-radius: 7px;
 }
 
 .preview-item img {
-  width: 100%;
-  height: 140px;
-  object-fit: contain;
-  background: #eee;
-  border-radius: 5px;
+  cursor: pointer;
 }
 
 .remove-photo {
@@ -131,6 +136,13 @@ button {
   margin-top: 4px;
   background: #c90000;
   color: white;
+  font-size: 12px;
+}
+
+.photo-count {
+  color: #555;
+  font-size: 13px;
+  margin: 8px 0;
 }
 
 .edit-btn {
@@ -169,8 +181,18 @@ footer {
     padding: 14px;
   }
 
-  .photo-gallery img {
-    height: 120px;
+  .photo-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .preview-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .photo-gallery img,
+  .preview-item img,
+  .preview-gallery > img {
+    height: 85px;
   }
 }
 </style>
@@ -223,8 +245,7 @@ footer {
   <h3>EXISTING PHOTOS</h3>
 
   <p style="font-size:13px;color:#666;margin:8px 0;">
-    Edit ചെയ്യുമ്പോൾ പഴയ ഫോട്ടോകൾ ഇവിടെ കാണാം.
-    ആവശ്യമില്ലാത്തത് Remove ചെയ്യാം.
+    പഴയ ഫോട്ടോകൾ ഇവിടെ കാണാം. ആവശ്യമില്ലാത്തത് Remove ചെയ്യാം.
   </p>
 
   <div id="existingPhotos" class="preview-gallery"></div>
@@ -232,6 +253,10 @@ footer {
   <label><b>ADD NEW VEHICLE PHOTOS</b></label>
 
   <input id="photo" type="file" accept="image/*" multiple>
+
+  <p style="font-size:12px;color:#777;">
+    Multiple photos select ചെയ്യാം. ഓരോ ഫോട്ടോയും 5 MB-ൽ താഴെയായിരിക്കണം.
+  </p>
 
   <div id="newPhotosPreview" class="preview-gallery"></div>
 
@@ -273,6 +298,7 @@ const db = window.supabase.createClient(
 
 let currentVehicles = [];
 let existingPhotoUrls = [];
+let previewObjectUrls = [];
 
 const placeholder =
 "https://placehold.co/600x400?text=Vehicle";
@@ -390,9 +416,11 @@ function displayVehicles() {
       const img = document.createElement("img");
       img.src = url;
       img.alt = vehicle.name || "Vehicle";
+
       img.onerror = () => {
         img.src = placeholder;
       };
+
       gallery.appendChild(img);
     });
 
@@ -421,7 +449,13 @@ function displayVehicles() {
   });
 }
 
-// SHOW EXISTING PHOTOS WHILE EDITING
+// CLEAR PREVIEW OBJECT URLS
+function clearPreviewObjectUrls() {
+  previewObjectUrls.forEach(url => URL.revokeObjectURL(url));
+  previewObjectUrls = [];
+}
+
+// DISPLAY EXISTING PHOTOS WHILE EDITING
 function displayExistingPhotos() {
   const container = document.getElementById("existingPhotos");
   container.innerHTML = "";
@@ -437,6 +471,8 @@ function displayExistingPhotos() {
 
     const img = document.createElement("img");
     img.src = url;
+    img.alt = "Existing vehicle photo";
+
     img.onerror = () => {
       img.src = placeholder;
     };
@@ -458,12 +494,25 @@ function displayExistingPhotos() {
 // PREVIEW NEW PHOTOS
 document.getElementById("photo").addEventListener("change", function() {
   const container = document.getElementById("newPhotosPreview");
+
+  clearPreviewObjectUrls();
   container.innerHTML = "";
 
-  Array.from(this.files).forEach(file => {
+  const files = Array.from(this.files);
+
+  files.forEach(file => {
+    if (!file.type.startsWith("image/")) return;
+
+    const url = URL.createObjectURL(file);
+    previewObjectUrls.push(url);
+
     const img = document.createElement("img");
-    img.src = URL.createObjectURL(file);
+    img.src = url;
     img.alt = file.name;
+
+    img.onerror = () => {
+      img.src = placeholder;
+    };
 
     container.appendChild(img);
   });
@@ -605,6 +654,8 @@ function editVehicle(id) {
   existingPhotoUrls = getVehiclePhotos(vehicle);
 
   document.getElementById("photo").value = "";
+
+  clearPreviewObjectUrls();
   document.getElementById("newPhotosPreview").innerHTML = "";
 
   displayExistingPhotos();
@@ -653,6 +704,8 @@ function clearForm() {
 
   document.getElementById("existingPhotos").innerHTML = "";
   document.getElementById("newPhotosPreview").innerHTML = "";
+
+  clearPreviewObjectUrls();
 
   existingPhotoUrls = [];
   document.getElementById("message").textContent = "";
