@@ -26,64 +26,17 @@ header {
   text-align: center;
 }
 
-header h1 {
-  font-size: 32px;
-  font-weight: bold;
-}
+header h1 { font-size: 32px; }
 
 header p {
   margin-top: 8px;
   letter-spacing: 1px;
 }
 
-nav {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 15px;
-  background: white;
-  border-bottom: 1px solid #ddd;
-}
-
-button {
-  cursor: pointer;
-}
-
-nav button {
-  background: #c90000;
-  color: white;
-  border: none;
-  padding: 11px 18px;
-  border-radius: 5px;
-}
-
 h2 {
   text-align: center;
   margin: 25px 0 15px;
   color: #c90000;
-}
-
-.categories {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px;
-}
-
-.categories button {
-  padding: 12px 20px;
-  background: white;
-  border: 2px solid #c90000;
-  color: #c90000;
-  border-radius: 5px;
-}
-
-.categories button:hover,
-.categories button.active {
-  background: #c90000;
-  color: white;
 }
 
 #loginBox {
@@ -93,10 +46,6 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 2px 10px #eee;
-}
-
-#loginBox h2 {
-  margin-top: 0;
 }
 
 #loginBox input {
@@ -117,6 +66,7 @@ h2 {
   border-radius: 5px;
   font-size: 16px;
   margin-top: 8px;
+  cursor: pointer;
 }
 
 #loginMessage {
@@ -128,6 +78,29 @@ h2 {
 #customerArea {
   text-align: center;
   margin: 15px;
+}
+
+.categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+}
+
+.categories button {
+  padding: 12px 20px;
+  background: white;
+  border: 2px solid #c90000;
+  color: #c90000;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.categories button.active,
+.categories button:hover {
+  background: #c90000;
+  color: white;
 }
 
 #vehicles {
@@ -158,9 +131,7 @@ h2 {
   color: #c90000;
 }
 
-.vehicle p {
-  padding: 0 10px 10px;
-}
+.vehicle p { padding: 0 10px 10px; }
 
 .vehicle button {
   width: calc(100% - 20px);
@@ -170,6 +141,7 @@ h2 {
   color: white;
   border: none;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 #detailBox {
@@ -184,6 +156,22 @@ h2 {
 #detailBox img {
   width: 100%;
   max-height: 300px;
+  object-fit: contain;
+  background: #eee;
+  margin-bottom: 10px;
+}
+
+.gallery {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 15px;
+}
+
+.gallery img {
+  min-width: 85%;
+  max-width: 85%;
+  height: 250px !important;
   object-fit: contain;
 }
 
@@ -203,9 +191,7 @@ h2 {
   margin-top: 12px;
 }
 
-.call-button {
-  background: #c90000;
-}
+.call-button { background: #c90000; }
 
 footer {
   background: #c90000;
@@ -215,14 +201,10 @@ footer {
   margin-top: 30px;
 }
 
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 @media(max-width: 480px) {
-  header h1 {
-    font-size: 27px;
-  }
+  header h1 { font-size: 27px; }
 
   #vehicles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -230,9 +212,7 @@ footer {
     padding: 10px;
   }
 
-  .vehicle img {
-    height: 120px;
-  }
+  .vehicle img { height: 120px; }
 }
 </style>
 </head>
@@ -252,24 +232,14 @@ footer {
   </button>
 </div>
 
-<!-- CUSTOMER LOGIN -->
-
 <div id="loginBox">
   <h2>Customer Login</h2>
 
-  <input
-    id="customerName"
-    type="text"
-    placeholder="Enter Your Name"
-    maxlength="100"
-  >
+  <input id="customerName" type="text"
+    placeholder="Enter Your Name" maxlength="100">
 
-  <input
-    id="customerPhone"
-    type="tel"
-    placeholder="Enter Phone Number"
-    maxlength="16"
-  >
+  <input id="customerPhone" type="tel"
+    placeholder="Enter Phone Number" maxlength="16">
 
   <button class="main-button" onclick="customerLogin()">
     Continue
@@ -277,62 +247,16 @@ footer {
 
   <p id="loginMessage"></p>
 </div>
-<!-- ADMIN LOGIN -->
 
-<div style="text-align:center; margin:20px;">
-  <button
-    onclick="document.getElementById('adminLoginBox').classList.toggle('hidden')"
-    style="background:#333;color:white;padding:10px 20px;border:0;border-radius:5px;">
-    Admin Login
-  </button>
-</div>
-
-<div id="adminLoginBox" class="hidden"
-     style="max-width:400px;margin:20px auto;padding:20px;border:1px solid #ddd;border-radius:10px;">
-
-  <h2>Admin Login</h2>
-
-  <input id="adminEmail" type="email"
-         placeholder="Admin Email"
-         style="width:100%;padding:12px;margin:8px 0;">
-
-  <input id="adminPassword" type="password"
-         placeholder="Admin Password"
-         style="width:100%;padding:12px;margin:8px 0;">
-
-  <button onclick="adminLogin()"
-          style="width:100%;padding:12px;background:#c90000;color:white;border:0;border-radius:5px;">
-    Login as Admin
-  </button>
-
-  <p id="adminMessage"></p>
-</div>
 <h2>OUR CATEGORIES</h2>
 
 <div class="categories">
-  <button class="active" onclick="showCategory('All', this)">
-    All Vehicles
-  </button>
-
-  <button onclick="showCategory('Diesel', this)">
-    Car - Diesel
-  </button>
-
-  <button onclick="showCategory('Petrol', this)">
-    Car - Petrol
-  </button>
-
-  <button onclick="showCategory('EV', this)">
-    Car - EV
-  </button>
-
-  <button onclick="showCategory('Bike', this)">
-    Bike
-  </button>
-
-  <button onclick="showCategory('Scooty', this)">
-    Scooty
-  </button>
+  <button class="active" onclick="showCategory('All', this)">All Vehicles</button>
+  <button onclick="showCategory('Diesel', this)">Car - Diesel</button>
+  <button onclick="showCategory('Petrol', this)">Car - Petrol</button>
+  <button onclick="showCategory('EV', this)">Car - EV</button>
+  <button onclick="showCategory('Bike', this)">Bike</button>
+  <button onclick="showCategory('Scooty', this)">Scooty</button>
 </div>
 
 <h2>AVAILABLE VEHICLES</h2>
@@ -343,8 +267,6 @@ footer {
 
 <div id="vehicles"></div>
 
-<!-- VEHICLE FULL DETAILS -->
-
 <div id="detailBox">
   <button onclick="closeDetails()"
     style="padding:8px 14px;background:#555;color:white;border:0;border-radius:5px;margin-bottom:15px;">
@@ -353,19 +275,13 @@ footer {
 
   <div id="detailContent"></div>
 
-  <a
-    id="whatsappButton"
-    class="contact-button"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
+  <a id="whatsappButton" class="contact-button"
+    target="_blank" rel="noopener noreferrer">
     WhatsApp Enquiry
   </a>
 
-  <a
-    href="tel:+919562010485"
-    class="contact-button call-button"
-  >
+  <a href="tel:+919562010485"
+    class="contact-button call-button">
     Call: +91 95620 10485
   </a>
 </div>
@@ -376,17 +292,14 @@ footer {
   <p>Contact: +91 95620 10485</p>
 </footer>
 
-<!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
 const SUPABASE_URL =
-  "https://tcaewtllgfohthboyivb.supabase.co";
+"https://tcaewtllgfohthboyivb.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_WvQQ7IHQr9kQf-S07LY65A_U66frylM";
+"sb_publishable_WvQQ7IHQr9kQf-S07LY65A_U66frylM";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -398,20 +311,12 @@ let currentCategory = "All";
 let allVehicles = [];
 
 const imagePlaceholder =
-  "https://placehold.co/600x400?text=ACB+MOTORS";
+"https://placehold.co/600x400?text=ACB+MOTORS";
 
 // CUSTOMER LOGIN
-
 async function customerLogin() {
-
-  const name = document
-    .getElementById("customerName")
-    .value.trim();
-
-  const phone = document
-    .getElementById("customerPhone")
-    .value.trim();
-
+  const name = document.getElementById("customerName").value.trim();
+  const phone = document.getElementById("customerPhone").value.trim();
   const message = document.getElementById("loginMessage");
 
   if (name.length < 2) {
@@ -427,52 +332,37 @@ async function customerLogin() {
   message.textContent = "Please wait...";
 
   try {
-
     const { data, error } =
       await supabaseClient.auth.signInAnonymously();
 
     if (error) throw error;
 
-    const userId = data.user.id;
-
     const { error: insertError } =
-      await supabaseClient
-        .from("customers")
-        .insert({
-          name: name,
-          phone: phone,
-          user_id: userId
-        });
+      await supabaseClient.from("customers").insert({
+        name,
+        phone,
+        user_id: data.user.id
+      });
 
     if (insertError) throw insertError;
 
     loggedIn = true;
-
     document.getElementById("loginBox").classList.add("hidden");
-
     document.getElementById("customerArea").classList.remove("hidden");
-
     document.getElementById("welcomeText").textContent =
       "Welcome, " + name;
 
     message.textContent = "";
-
     await loadVehicles();
 
   } catch (error) {
-
-    message.textContent =
-      "Login Error: " + error.message;
-
+    message.textContent = "Login Error: " + error.message;
   }
 }
 
 // CHECK EXISTING LOGIN
-
 async function checkLogin() {
-
-  const { data } =
-    await supabaseClient.auth.getSession();
+  const { data } = await supabaseClient.auth.getSession();
 
   if (!data.session) {
     await loadVehicles();
@@ -482,8 +372,7 @@ async function checkLogin() {
   const userId = data.session.user.id;
 
   const { data: customer, error } =
-    await supabaseClient
-      .from("customers")
+    await supabaseClient.from("customers")
       .select("name, phone")
       .eq("user_id", userId)
       .maybeSingle();
@@ -494,39 +383,30 @@ async function checkLogin() {
   }
 
   loggedIn = true;
-
   document.getElementById("loginBox").classList.add("hidden");
-
   document.getElementById("customerArea").classList.remove("hidden");
-
   document.getElementById("welcomeText").textContent =
     "Welcome, " + customer.name;
 
   await loadVehicles();
 }
 
-// LOAD VEHICLES FROM DATABASE
-
+// LOAD VEHICLES
 async function loadVehicles() {
-
   const container = document.getElementById("vehicles");
-
   const message = document.getElementById("vehicleMessage");
 
   container.innerHTML = "";
-
   message.textContent = "Loading vehicles...";
 
-  let query = supabaseClient
-    .from("vehicles")
-    .select(
-      loggedIn
-        ? "*"
-        : "id,name,category,year,owner,photo_url"
-    )
-    .order("created_at", { ascending: false });
+  const columns = loggedIn
+    ? "*"
+    : "id,name,category,year,owner,photo_url,photo_urls";
 
-  const { data, error } = await query;
+  const { data, error } = await supabaseClient
+    .from("vehicles")
+    .select(columns)
+    .order("created_at", { ascending: false });
 
   if (error) {
     message.textContent = "Error loading vehicles: " + error.message;
@@ -534,43 +414,32 @@ async function loadVehicles() {
   }
 
   allVehicles = data || [];
-
   displayVehicles();
-
 }
 
-// SHOW CATEGORY
-
+// CATEGORY
 function showCategory(category, button) {
-
   currentCategory = category;
 
   document.querySelectorAll(".categories button")
     .forEach(btn => btn.classList.remove("active"));
 
   button.classList.add("active");
-
   displayVehicles();
-
 }
 
-// DISPLAY VEHICLE CARDS
-
+// VEHICLE CARDS
 function displayVehicles() {
-
   const container = document.getElementById("vehicles");
-
   const message = document.getElementById("vehicleMessage");
 
   container.innerHTML = "";
 
   const filtered = currentCategory === "All"
     ? allVehicles
-    : allVehicles.filter(vehicle =>
-        vehicle.category === currentCategory
-      );
+    : allVehicles.filter(v => v.category === currentCategory);
 
-  if (filtered.length === 0) {
+  if (!filtered.length) {
     message.textContent = "No vehicles available in this category.";
     return;
   }
@@ -578,16 +447,16 @@ function displayVehicles() {
   message.textContent = "";
 
   filtered.forEach(vehicle => {
-
     const card = document.createElement("div");
     card.className = "vehicle";
 
+    const photos = vehicle.photo_urls || [];
+    const firstPhoto = photos[0] || vehicle.photo_url || imagePlaceholder;
+
     const image = document.createElement("img");
-    image.src = vehicle.photo_url || imagePlaceholder;
+    image.src = firstPhoto;
     image.alt = vehicle.name || "Vehicle";
-    image.onerror = function() {
-      this.src = imagePlaceholder;
-    };
+    image.onerror = () => { image.src = imagePlaceholder; };
 
     const title = document.createElement("h3");
     title.textContent = vehicle.name || "Vehicle";
@@ -599,9 +468,11 @@ function displayVehicles() {
     owner.textContent = "Owner: " + (vehicle.owner || "Not available");
 
     const button = document.createElement("button");
-    button.textContent = loggedIn ? "View Full Details" : "Login to View Details";
+    button.textContent = loggedIn
+      ? "View Full Details"
+      : "Login to View Details";
 
-    button.onclick = function() {
+    button.onclick = () => {
       if (!loggedIn) {
         document.getElementById("loginBox").scrollIntoView({
           behavior: "smooth"
@@ -613,46 +484,41 @@ function displayVehicles() {
       }
     };
 
-    card.appendChild(image);
-    card.appendChild(title);
-    card.appendChild(year);
-    card.appendChild(owner);
-    card.appendChild(button);
-
+    card.append(image, title, year, owner, button);
     container.appendChild(card);
-
   });
-
 }
 
-// SHOW FULL DETAILS
-
+// FULL DETAILS + PHOTO GALLERY
 function showDetails(vehicle) {
-
   const detailBox = document.getElementById("detailBox");
-
   const content = document.getElementById("detailContent");
 
   content.innerHTML = "";
 
-  const image = document.createElement("img");
-  image.src = vehicle.photo_url || imagePlaceholder;
-  image.alt = vehicle.name || "Vehicle";
+  const photos = vehicle.photo_urls?.length
+    ? vehicle.photo_urls
+    : [vehicle.photo_url || imagePlaceholder];
 
-  content.appendChild(image);
+  const gallery = document.createElement("div");
+  gallery.className = "gallery";
+
+  photos.forEach(url => {
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = vehicle.name || "Vehicle";
+    img.onerror = () => { img.src = imagePlaceholder; };
+    gallery.appendChild(img);
+  });
+
+  content.appendChild(gallery);
 
   function addDetail(label, value) {
-
     const line = document.createElement("p");
-
     line.className = "detail-line";
-
-    line.textContent =
-      label + ": " +
+    line.textContent = label + ": " +
       (value === null || value === undefined || value === ""
-        ? "Not available"
-        : value);
-
+        ? "Not available" : value);
     content.appendChild(line);
   }
 
@@ -675,108 +541,32 @@ function showDetails(vehicle) {
     encodeURIComponent(whatsappMessage);
 
   detailBox.style.display = "block";
-
-  detailBox.scrollIntoView({
-    behavior: "smooth"
-  });
-
+  detailBox.scrollIntoView({ behavior: "smooth" });
 }
 
 // CLOSE DETAILS
-
 function closeDetails() {
-
   document.getElementById("detailBox").style.display = "none";
-
 }
 
 // LOGOUT
-
 async function logoutCustomer() {
-
   await supabaseClient.auth.signOut();
 
   loggedIn = false;
 
   document.getElementById("customerArea").classList.add("hidden");
-
   document.getElementById("loginBox").classList.remove("hidden");
-
   document.getElementById("customerName").value = "";
-
   document.getElementById("customerPhone").value = "";
-
   document.getElementById("loginMessage").textContent = "";
-
   document.getElementById("detailBox").style.display = "none";
 
   await loadVehicles();
-
 }
-// ADMIN LOGIN
 
-async function adminLogin() {
-
-  const email = document.getElementById("adminEmail").value.trim();
-  const password = document.getElementById("adminPassword").value;
-  const message = document.getElementById("adminMessage");
-
-  if (!email || !password) {
-    message.textContent = "Enter email and password.";
-    return;
-  }
-
-  message.textContent = "Checking admin account...";
-
-  try {
-
-    // Sign out existing customer session
-    await supabaseClient.auth.signOut();
-
-    // Admin email and password login
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
-
-    if (error) throw error;
-
-    // Check admin permission in database
-    const { data: admin, error: adminError } =
-      await supabaseClient
-        .from("admin_users")
-        .select("user_id")
-        .eq("user_id", data.user.id)
-        .maybeSingle();
-
-    if (adminError) throw adminError;
-
-    if (!admin) {
-      await supabaseClient.auth.signOut();
-      throw new Error("You are not an authorized admin.");
-    }
-
-    message.textContent = "Admin login successful!";
-
-    document.getElementById("adminLoginBox").classList.add("hidden");
-
-    document.getElementById("customerArea").classList.add("hidden");
-
-    loggedIn = true;
-
-    await loadVehicles();
-
-  } catch (error) {
-
-    message.textContent = error.message;
-
-  }
-}
 // START WEBSITE
-
 checkLogin();
-
 </script>
 
 </body>
