@@ -164,8 +164,14 @@ footer {
 }
 
 @media(max-width: 480px) {
-  .container { margin: 12px; padding: 14px; }
-  .photo-gallery img { height: 120px; }
+  .container {
+    margin: 12px;
+    padding: 14px;
+  }
+
+  .photo-gallery img {
+    height: 120px;
+  }
 }
 </style>
 </head>
@@ -200,9 +206,6 @@ footer {
 
   <select id="category">
     <option value="">Select Category</option>
-    <option value="Diesel">Car - Diesel</option>
-    <option value="Petrol">Car - Petrol</option>
-    <option value="EV">Car - EV</option>
     <option value="Bike">Bike</option>
     <option value="Scooty">Scooty</option>
   </select>
@@ -218,8 +221,10 @@ footer {
   <hr style="margin:20px 0;">
 
   <h3>EXISTING PHOTOS</h3>
+
   <p style="font-size:13px;color:#666;margin:8px 0;">
-    Edit ചെയ്യുമ്പോൾ പഴയ ഫോട്ടോകൾ ഇവിടെ കാണാം. ആവശ്യമില്ലാത്തത് Remove ചെയ്യാം.
+    Edit ചെയ്യുമ്പോൾ പഴയ ഫോട്ടോകൾ ഇവിടെ കാണാം.
+    ആവശ്യമില്ലാത്തത് Remove ചെയ്യാം.
   </p>
 
   <div id="existingPhotos" class="preview-gallery"></div>
@@ -323,7 +328,7 @@ async function verifyAdmin(userId) {
   await loadVehicles();
 }
 
-// LOAD VEHICLES
+// LOAD ONLY BIKE AND SCOOTY
 async function loadVehicles() {
   const list = document.getElementById("vehicleList");
   list.textContent = "Loading vehicles...";
@@ -331,6 +336,7 @@ async function loadVehicles() {
   const { data, error } = await db
     .from("vehicles")
     .select("*")
+    .in("category", ["Bike", "Scooty"])
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -361,7 +367,7 @@ function displayVehicles() {
   list.innerHTML = "";
 
   if (currentVehicles.length === 0) {
-    list.textContent = "No vehicles added yet.";
+    list.textContent = "No Bike or Scooty added yet.";
     return;
   }
 
@@ -372,6 +378,9 @@ function displayVehicles() {
     const title = document.createElement("h3");
     title.textContent = vehicle.name || "";
 
+    const category = document.createElement("p");
+    category.textContent = "Category: " + vehicle.category;
+
     const photos = getVehiclePhotos(vehicle);
 
     const gallery = document.createElement("div");
@@ -381,7 +390,9 @@ function displayVehicles() {
       const img = document.createElement("img");
       img.src = url;
       img.alt = vehicle.name || "Vehicle";
-      img.onerror = () => { img.src = placeholder; };
+      img.onerror = () => {
+        img.src = placeholder;
+      };
       gallery.appendChild(img);
     });
 
@@ -405,7 +416,7 @@ function displayVehicles() {
     remove.textContent = "DELETE";
     remove.onclick = () => deleteVehicle(vehicle.id);
 
-    card.append(title, gallery, count, details, edit, remove);
+    card.append(title, category, gallery, count, details, edit, remove);
     list.appendChild(card);
   });
 }
@@ -426,11 +437,14 @@ function displayExistingPhotos() {
 
     const img = document.createElement("img");
     img.src = url;
-    img.onerror = () => { img.src = placeholder; };
+    img.onerror = () => {
+      img.src = placeholder;
+    };
 
     const remove = document.createElement("button");
     remove.className = "remove-photo";
     remove.textContent = "REMOVE PHOTO";
+
     remove.onclick = () => {
       existingPhotoUrls.splice(index, 1);
       displayExistingPhotos();
@@ -450,6 +464,7 @@ document.getElementById("photo").addEventListener("change", function() {
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
     img.alt = file.name;
+
     container.appendChild(img);
   });
 });
@@ -473,7 +488,13 @@ async function saveVehicle() {
   );
 
   if (!name || !category || !year || !owner) {
-    message.textContent = "Please fill Name, Category, Year and Owner.";
+    message.textContent =
+      "Please fill Name, Category, Year and Owner.";
+    return;
+  }
+
+  if (!["Bike", "Scooty"].includes(category)) {
+    message.textContent = "Only Bike and Scooty categories are allowed.";
     return;
   }
 
@@ -554,7 +575,8 @@ async function saveVehicle() {
 
     if (result.error) throw result.error;
 
-    message.textContent = "Vehicle and all photos saved successfully!";
+    message.textContent =
+      "Vehicle and all photos saved successfully!";
 
     clearForm();
     await loadVehicles();
@@ -577,7 +599,8 @@ function editVehicle(id) {
   document.getElementById("price").value = vehicle.price || "";
   document.getElementById("km").value = vehicle.km || "";
   document.getElementById("fuel").value = vehicle.fuel_type || "";
-  document.getElementById("description").value = vehicle.description || "";
+  document.getElementById("description").value =
+    vehicle.description || "";
 
   existingPhotoUrls = getVehiclePhotos(vehicle);
 
@@ -589,7 +612,10 @@ function editVehicle(id) {
   document.getElementById("message").textContent =
     "Editing vehicle. Add or remove photos as needed.";
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 // DELETE VEHICLE
@@ -664,3 +690,4 @@ checkAdminSession();
 
 </body>
 </html>
+
