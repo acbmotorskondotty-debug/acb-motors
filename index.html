@@ -196,6 +196,21 @@ function showCategory(category) {
 showCategory("All");
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://tcaewtllgfohthboyivb.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_WvQQ7IHQr9kQf-S07LY65A_U66frylM";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+console.log("ACB MOTORS Supabase Connected!");
+</script>
+
 </body>
 </html>
 
