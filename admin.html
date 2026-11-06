@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,12 +26,10 @@ header {
   padding: 25px 10px;
 }
 
-header h1 {
-  font-size: 30px;
-}
+header h1 { font-size: 30px; }
 
 .container {
-  max-width: 650px;
+  max-width: 700px;
   margin: 25px auto;
   padding: 20px;
   background: white;
@@ -77,20 +76,61 @@ button {
 .vehicle-item {
   border: 1px solid #ddd;
   padding: 12px;
-  margin: 12px 0;
+  margin: 15px 0;
   border-radius: 7px;
-}
-
-.vehicle-item img {
-  width: 100%;
-  height: 180px;
-  object-fit: contain;
-  background: #eee;
 }
 
 .vehicle-item h3 {
   color: #c90000;
   margin: 10px 0;
+}
+
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.photo-gallery img {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  background: #eee;
+  border-radius: 5px;
+}
+
+.photo-count {
+  color: #555;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.preview-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.preview-item {
+  position: relative;
+}
+
+.preview-item img {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  background: #eee;
+  border-radius: 5px;
+}
+
+.remove-photo {
+  width: 100%;
+  padding: 7px;
+  margin-top: 4px;
+  background: #c90000;
+  color: white;
 }
 
 .edit-btn {
@@ -105,9 +145,10 @@ button {
   margin: 5px;
 }
 
-#message {
+#message, #loginMessage {
   margin-top: 12px;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .hidden {
@@ -121,6 +162,11 @@ footer {
   padding: 20px;
   margin-top: 30px;
 }
+
+@media(max-width: 480px) {
+  .container { margin: 12px; padding: 14px; }
+  .photo-gallery img { height: 120px; }
+}
 </style>
 </head>
 
@@ -131,48 +177,26 @@ footer {
   <p>ADMIN DASHBOARD</p>
 </header>
 
-<!-- LOGIN -->
-
 <div class="container" id="loginBox">
-
   <h2>Admin Login</h2>
 
-  <input
-    type="email"
-    id="email"
-    placeholder="Admin Email"
-  >
+  <input type="email" id="email" placeholder="Admin Email">
+  <input type="password" id="password" placeholder="Admin Password">
 
-  <input
-    type="password"
-    id="password"
-    placeholder="Admin Password"
-  >
-
-  <button class="main-btn" onclick="adminLogin()">
-    LOGIN
-  </button>
+  <button class="main-btn" onclick="adminLogin()">LOGIN</button>
 
   <p id="loginMessage"></p>
-
 </div>
-
-<!-- ADMIN DASHBOARD -->
 
 <div class="container hidden" id="dashboard">
 
-  <button class="logout-btn" onclick="adminLogout()">
-    Logout
-  </button>
+  <button class="logout-btn" onclick="adminLogout()">Logout</button>
 
   <h2>ADD / EDIT VEHICLE</h2>
 
   <input type="hidden" id="editId">
 
-  <input
-    id="vehicleName"
-    placeholder="Vehicle Name"
-  >
+  <input id="vehicleName" placeholder="Vehicle Name">
 
   <select id="category">
     <option value="">Select Category</option>
@@ -183,58 +207,34 @@ footer {
     <option value="Scooty">Scooty</option>
   </select>
 
-  <input
-    id="year"
-    type="number"
-    placeholder="Year"
-  >
+  <input id="year" type="number" placeholder="Year">
+  <input id="owner" placeholder="Owner (Example: 1st Owner)">
+  <input id="price" type="number" placeholder="Price">
+  <input id="km" type="number" placeholder="Kilometers">
+  <input id="fuel" placeholder="Fuel Type">
 
-  <input
-    id="owner"
-    placeholder="Owner (Example: 1st Owner)"
-  >
+  <textarea id="description" placeholder="Vehicle Description" rows="4"></textarea>
 
-  <input
-    id="price"
-    type="number"
-    placeholder="Price"
-  >
+  <hr style="margin:20px 0;">
 
-  <input
-    id="km"
-    type="number"
-    placeholder="Kilometers"
-  >
+  <h3>EXISTING PHOTOS</h3>
+  <p style="font-size:13px;color:#666;margin:8px 0;">
+    Edit ചെയ്യുമ്പോൾ പഴയ ഫോട്ടോകൾ ഇവിടെ കാണാം. ആവശ്യമില്ലാത്തത് Remove ചെയ്യാം.
+  </p>
 
-  <input
-    id="fuel"
-    placeholder="Fuel Type"
-  >
+  <div id="existingPhotos" class="preview-gallery"></div>
 
-  <textarea
-    id="description"
-    placeholder="Vehicle Description"
-    rows="4"
-  ></textarea>
+  <label><b>ADD NEW VEHICLE PHOTOS</b></label>
 
-  <label>Vehicle Photo(Select Multiple)</label>
+  <input id="photo" type="file" accept="image/*" multiple>
 
-  <input
-    id="photo"
-    type="file"
-    accept="image/*"
-    multiple
-  >
+  <div id="newPhotosPreview" class="preview-gallery"></div>
 
   <button class="main-btn" onclick="saveVehicle()">
     SAVE VEHICLE
   </button>
 
-  <button
-    class="main-btn"
-    style="background:#555"
-    onclick="clearForm()"
-  >
+  <button class="main-btn" style="background:#555" onclick="clearForm()">
     CLEAR FORM
   </button>
 
@@ -255,7 +255,6 @@ footer {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
 const SUPABASE_URL =
 "https://tcaewtllgfohthboyivb.supabase.co";
 
@@ -268,14 +267,15 @@ const db = window.supabase.createClient(
 );
 
 let currentVehicles = [];
+let existingPhotoUrls = [];
+
+const placeholder =
+"https://placehold.co/600x400?text=Vehicle";
 
 // ADMIN LOGIN
-
 async function adminLogin() {
-
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
-
   const message = document.getElementById("loginMessage");
 
   if (!email || !password) {
@@ -286,68 +286,52 @@ async function adminLogin() {
   message.textContent = "Checking...";
 
   try {
-
     await db.auth.signOut();
 
-    const { data, error } =
-      await db.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+    const { data, error } = await db.auth.signInWithPassword({
+      email,
+      password
+    });
 
     if (error) throw error;
 
     await verifyAdmin(data.user.id);
 
   } catch (error) {
-
     message.textContent = error.message;
-
   }
 }
 
 // VERIFY ADMIN
-
 async function verifyAdmin(userId) {
-
-  const { data, error } =
-    await db
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", userId)
-      .maybeSingle();
+  const { data, error } = await db
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
 
   if (error) throw error;
 
   if (!data) {
-
     await db.auth.signOut();
-
     throw new Error("Admin access denied.");
-
   }
 
   document.getElementById("loginBox").classList.add("hidden");
-
   document.getElementById("dashboard").classList.remove("hidden");
 
   await loadVehicles();
-
 }
 
 // LOAD VEHICLES
-
 async function loadVehicles() {
-
   const list = document.getElementById("vehicleList");
-
   list.textContent = "Loading vehicles...";
 
-  const { data, error } =
-    await db
-      .from("vehicles")
-      .select("*")
-      .order("created_at", { ascending: false });
+  const { data, error } = await db
+    .from("vehicles")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
     list.textContent = error.message;
@@ -355,17 +339,25 @@ async function loadVehicles() {
   }
 
   currentVehicles = data || [];
-
   displayVehicles();
+}
 
+// GET ALL VEHICLE PHOTOS
+function getVehiclePhotos(vehicle) {
+  const photos = Array.isArray(vehicle.photo_urls)
+    ? vehicle.photo_urls.filter(Boolean)
+    : [];
+
+  if (photos.length === 0 && vehicle.photo_url) {
+    photos.push(vehicle.photo_url);
+  }
+
+  return [...new Set(photos)];
 }
 
 // DISPLAY VEHICLES
-
 function displayVehicles() {
-
   const list = document.getElementById("vehicleList");
-
   list.innerHTML = "";
 
   if (currentVehicles.length === 0) {
@@ -374,16 +366,28 @@ function displayVehicles() {
   }
 
   currentVehicles.forEach(vehicle => {
-
     const card = document.createElement("div");
-
     card.className = "vehicle-item";
-
-    const img = document.createElement("img");
-    img.src = vehicle.photo_url || "https://placehold.co/600x400?text=Vehicle";
 
     const title = document.createElement("h3");
     title.textContent = vehicle.name || "";
+
+    const photos = getVehiclePhotos(vehicle);
+
+    const gallery = document.createElement("div");
+    gallery.className = "photo-gallery";
+
+    photos.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = vehicle.name || "Vehicle";
+      img.onerror = () => { img.src = placeholder; };
+      gallery.appendChild(img);
+    });
+
+    const count = document.createElement("p");
+    count.className = "photo-count";
+    count.textContent = photos.length + " photo(s)";
 
     const details = document.createElement("p");
     details.textContent =
@@ -401,20 +405,56 @@ function displayVehicles() {
     remove.textContent = "DELETE";
     remove.onclick = () => deleteVehicle(vehicle.id);
 
-    card.appendChild(img);
-    card.appendChild(title);
-    card.appendChild(details);
-    card.appendChild(edit);
-    card.appendChild(remove);
-
+    card.append(title, gallery, count, details, edit, remove);
     list.appendChild(card);
-
   });
-
 }
 
-// SAVE VEHICLE - MULTIPLE PHOTOS
+// SHOW EXISTING PHOTOS WHILE EDITING
+function displayExistingPhotos() {
+  const container = document.getElementById("existingPhotos");
+  container.innerHTML = "";
 
+  if (existingPhotoUrls.length === 0) {
+    container.textContent = "No existing photos.";
+    return;
+  }
+
+  existingPhotoUrls.forEach((url, index) => {
+    const item = document.createElement("div");
+    item.className = "preview-item";
+
+    const img = document.createElement("img");
+    img.src = url;
+    img.onerror = () => { img.src = placeholder; };
+
+    const remove = document.createElement("button");
+    remove.className = "remove-photo";
+    remove.textContent = "REMOVE PHOTO";
+    remove.onclick = () => {
+      existingPhotoUrls.splice(index, 1);
+      displayExistingPhotos();
+    };
+
+    item.append(img, remove);
+    container.appendChild(item);
+  });
+}
+
+// PREVIEW NEW PHOTOS
+document.getElementById("photo").addEventListener("change", function() {
+  const container = document.getElementById("newPhotosPreview");
+  container.innerHTML = "";
+
+  Array.from(this.files).forEach(file => {
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.alt = file.name;
+    container.appendChild(img);
+  });
+});
+
+// SAVE VEHICLE
 async function saveVehicle() {
   const message = document.getElementById("message");
 
@@ -439,7 +479,7 @@ async function saveVehicle() {
 
   for (const file of photoFiles) {
     if (!file.type.startsWith("image/")) {
-      message.textContent = "Please select only image files.";
+      message.textContent = "Select only image files.";
       return;
     }
 
@@ -458,23 +498,14 @@ async function saveVehicle() {
       throw new Error("Please login again.");
     }
 
-    let photoUrls = [];
-
-    if (editId) {
-      const oldVehicle = currentVehicles.find(v => v.id == editId);
-      photoUrls = oldVehicle?.photo_urls || [];
-
-      if (photoUrls.length === 0 && oldVehicle?.photo_url) {
-        photoUrls = [oldVehicle.photo_url];
-      }
-    }
+    let photoUrls = [...existingPhotoUrls];
 
     for (const file of photoFiles) {
       const extension = file.name.split(".").pop().toLowerCase();
 
       const filePath =
-        sessionData.session.user.id +
-        "/" + Date.now() + "-" +
+        sessionData.session.user.id + "/" +
+        Date.now() + "-" +
         Math.random().toString(36).slice(2) +
         "." + extension;
 
@@ -491,7 +522,7 @@ async function saveVehicle() {
       photoUrls.push(publicData.publicUrl);
     }
 
-    if (!editId && photoUrls.length === 0) {
+    if (photoUrls.length === 0) {
       throw new Error("Please select at least one vehicle photo.");
     }
 
@@ -523,7 +554,7 @@ async function saveVehicle() {
 
     if (result.error) throw result.error;
 
-    message.textContent = "Vehicle and photos saved successfully!";
+    message.textContent = "Vehicle and all photos saved successfully!";
 
     clearForm();
     await loadVehicles();
@@ -533,14 +564,9 @@ async function saveVehicle() {
   }
 }
 
-
-
 // EDIT VEHICLE
-
 function editVehicle(id) {
-
   const vehicle = currentVehicles.find(v => v.id === id);
-
   if (!vehicle) return;
 
   document.getElementById("editId").value = vehicle.id;
@@ -553,29 +579,29 @@ function editVehicle(id) {
   document.getElementById("fuel").value = vehicle.fuel_type || "";
   document.getElementById("description").value = vehicle.description || "";
 
+  existingPhotoUrls = getVehiclePhotos(vehicle);
+
+  document.getElementById("photo").value = "";
+  document.getElementById("newPhotosPreview").innerHTML = "";
+
+  displayExistingPhotos();
+
   document.getElementById("message").textContent =
-    "Editing vehicle. Choose a new photo only if you want to replace it.";
+    "Editing vehicle. Add or remove photos as needed.";
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // DELETE VEHICLE
-
 async function deleteVehicle(id) {
-
   if (!confirm("Are you sure you want to delete this vehicle?")) {
     return;
   }
 
-  const { error } =
-    await db
-      .from("vehicles")
-      .delete()
-      .eq("id", id);
+  const { error } = await db
+    .from("vehicles")
+    .delete()
+    .eq("id", id);
 
   if (error) {
     alert(error.message);
@@ -583,15 +609,11 @@ async function deleteVehicle(id) {
   }
 
   alert("Vehicle deleted successfully.");
-
   await loadVehicles();
-
 }
 
 // CLEAR FORM
-
 function clearForm() {
-
   document.getElementById("editId").value = "";
   document.getElementById("vehicleName").value = "";
   document.getElementById("category").value = "";
@@ -603,27 +625,28 @@ function clearForm() {
   document.getElementById("description").value = "";
   document.getElementById("photo").value = "";
 
+  document.getElementById("existingPhotos").innerHTML = "";
+  document.getElementById("newPhotosPreview").innerHTML = "";
+
+  existingPhotoUrls = [];
+  document.getElementById("message").textContent = "";
 }
 
 // LOGOUT
-
 async function adminLogout() {
-
   await db.auth.signOut();
 
-  document.getElementById("dashboard").classList.add("hidden");
+  currentVehicles = [];
 
+  document.getElementById("dashboard").classList.add("hidden");
   document.getElementById("loginBox").classList.remove("hidden");
 
   document.getElementById("email").value = "";
   document.getElementById("password").value = "";
-
 }
 
 // CHECK EXISTING SESSION
-
 async function checkAdminSession() {
-
   const { data } = await db.auth.getSession();
 
   if (!data.session) return;
@@ -634,13 +657,10 @@ async function checkAdminSession() {
     document.getElementById("loginMessage").textContent =
       error.message;
   }
-
 }
 
 checkAdminSession();
-
 </script>
 
 </body>
 </html>
-
