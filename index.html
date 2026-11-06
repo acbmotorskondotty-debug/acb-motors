@@ -314,20 +314,66 @@ header {
   margin-bottom: 15px;
 }
 
+/* PREMIUM PHOTO GALLERY */
 .gallery {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  margin-bottom: 18px;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
-.gallery img {
-  min-width: 85%;
-  max-width: 85%;
-  height: 270px;
+.main-gallery-image {
+  width: 100%;
+  height: 350px;
   object-fit: contain;
+  background: #f1f1f1;
+  border-radius: 12px;
+  display: block;
+}
+
+.gallery-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.gallery-controls button {
+  flex: 1;
+  padding: 11px;
+  background: #c90000;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.gallery-count {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px;
+}
+
+.gallery-thumbnails {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 12px 2px;
+}
+
+.gallery-thumbnail {
+  width: 75px;
+  height: 65px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 2px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
   background: #eee;
-  border-radius: 10px;
+}
+
+.gallery-thumbnail.active {
+  border-color: #c90000;
 }
 
 .detail-line {
@@ -452,10 +498,16 @@ footer p {
 
   #detailBox {
     margin: 12px;
+    padding: 15px;
   }
 
-  .gallery img {
-    height: 220px;
+  .main-gallery-image {
+    height: 230px;
+  }
+
+  .gallery-thumbnail {
+    width: 65px;
+    height: 55px;
   }
 }
 </style>
@@ -637,6 +689,8 @@ const supabaseClient = window.supabase.createClient(
 let loggedIn = false;
 let currentCategory = "All";
 let allVehicles = [];
+let currentGalleryPhotos = [];
+let currentGalleryIndex = 0;
 
 const imagePlaceholder =
 "https://placehold.co/600x400?text=ACB+MOTORS";
@@ -674,7 +728,6 @@ function openLogin() {
   }
 
   const box = document.getElementById("loginBox");
-
   box.style.display = "block";
 
   box.scrollIntoView({
@@ -882,34 +935,127 @@ function displayVehicles() {
   });
 }
 
-// FULL DETAILS + MULTIPLE PHOTO GALLERY
+// PREMIUM PHOTO GALLERY
+function updateGallery() {
+  const mainImage = document.getElementById("mainGalleryImage");
+  const thumbnails = document.getElementById("galleryThumbnails");
+  const counter = document.getElementById("galleryCount");
+
+  if (!mainImage || !currentGalleryPhotos.length) return;
+
+  mainImage.src = currentGalleryPhotos[currentGalleryIndex];
+  mainImage.onerror = () => {
+    mainImage.src = imagePlaceholder;
+  };
+
+  counter.textContent =
+    (currentGalleryIndex + 1) + " / " + currentGalleryPhotos.length;
+
+  thumbnails.querySelectorAll(".gallery-thumbnail")
+    .forEach((thumb, index) => {
+      thumb.classList.toggle(
+        "active",
+        index === currentGalleryIndex
+      );
+    });
+
+  const activeThumb =
+    thumbnails.querySelector(".gallery-thumbnail.active");
+
+  if (activeThumb) {
+    activeThumb.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center"
+    });
+  }
+}
+
+function changeGallery(direction) {
+  if (!currentGalleryPhotos.length) return;
+
+  currentGalleryIndex += direction;
+
+  if (currentGalleryIndex < 0) {
+    currentGalleryIndex = currentGalleryPhotos.length - 1;
+  }
+
+  if (currentGalleryIndex >= currentGalleryPhotos.length) {
+    currentGalleryIndex = 0;
+  }
+
+  updateGallery();
+}
+
+function selectGalleryImage(index) {
+  currentGalleryIndex = index;
+  updateGallery();
+}
+
+// FULL DETAILS + PREMIUM GALLERY
 function showDetails(vehicle) {
   const detailBox = document.getElementById("detailBox");
   const content = document.getElementById("detailContent");
 
   content.innerHTML = "";
 
-  const photos = Array.isArray(vehicle.photo_urls) &&
-                 vehicle.photo_urls.length
-    ? vehicle.photo_urls
-    : [vehicle.photo_url || imagePlaceholder];
+  currentGalleryPhotos =
+    Array.isArray(vehicle.photo_urls) && vehicle.photo_urls.length
+      ? vehicle.photo_urls.filter(Boolean)
+      : [vehicle.photo_url || imagePlaceholder];
+
+  currentGalleryIndex = 0;
 
   const gallery = document.createElement("div");
   gallery.className = "gallery";
 
-  photos.forEach(url => {
-    const img = document.createElement("img");
+  const mainImage = document.createElement("img");
+  mainImage.id = "mainGalleryImage";
+  mainImage.className = "main-gallery-image";
+  mainImage.alt = vehicle.name || "Vehicle";
 
-    img.src = url;
-    img.alt = vehicle.name || "Vehicle";
+  gallery.appendChild(mainImage);
 
-    img.onerror = () => {
-      img.src = imagePlaceholder;
+  const controls = document.createElement("div");
+  controls.className = "gallery-controls";
+
+  const previous = document.createElement("button");
+  previous.textContent = "❮ Previous";
+  previous.onclick = () => changeGallery(-1);
+
+  const next = document.createElement("button");
+  next.textContent = "Next ❯";
+  next.onclick = () => changeGallery(1);
+
+  controls.append(previous, next);
+  gallery.appendChild(controls);
+
+  const counter = document.createElement("p");
+  counter.id = "galleryCount";
+  counter.className = "gallery-count";
+  gallery.appendChild(counter);
+
+  const thumbnails = document.createElement("div");
+  thumbnails.id = "galleryThumbnails";
+  thumbnails.className = "gallery-thumbnails";
+
+  currentGalleryPhotos.forEach((url, index) => {
+    const thumb = document.createElement("img");
+
+    thumb.src = url;
+    thumb.alt = "Vehicle photo " + (index + 1);
+    thumb.className = "gallery-thumbnail";
+
+    thumb.onerror = () => {
+      thumb.src = imagePlaceholder;
     };
 
-    gallery.appendChild(img);
+    thumb.onclick = () => selectGalleryImage(index);
+
+    thumbnails.appendChild(thumb);
   });
 
+  gallery.appendChild(thumbnails);
   content.appendChild(gallery);
 
   function addDetail(label, value) {
@@ -944,6 +1090,8 @@ function showDetails(vehicle) {
 
   detailBox.style.display = "block";
 
+  updateGallery();
+
   detailBox.scrollIntoView({
     behavior: "smooth"
   });
@@ -952,6 +1100,8 @@ function showDetails(vehicle) {
 // CLOSE DETAILS
 function closeDetails() {
   document.getElementById("detailBox").style.display = "none";
+  currentGalleryPhotos = [];
+  currentGalleryIndex = 0;
 }
 
 // LOGOUT
@@ -968,6 +1118,9 @@ async function logoutCustomer() {
 
   document.getElementById("loginMessage").textContent = "";
   document.getElementById("detailBox").style.display = "none";
+
+  currentGalleryPhotos = [];
+  currentGalleryIndex = 0;
 
   await loadVehicles();
 }
